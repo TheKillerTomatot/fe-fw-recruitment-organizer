@@ -1,0 +1,1713 @@
+<!doctype html>
+<!--
+  Fortune's Weave · Part I Recruitment Planner · v6.2
+
+  An unofficial, non-commercial fan-made tool for Fire Emblem: Fortune's Weave.
+  Not affiliated with or endorsed by Nintendo or the game's developers.
+  Fire Emblem is a trademark of Nintendo. No game assets are used.
+
+  Made with the help of AI assistants (ChatGPT and Claude).
+  Recruitment data checked on 2026-10-26 against RPG Site, Serenes Forest and LUM
+  (links in the page footer). Please report mistakes so they can be fixed.
+
+  © 2026 TheKillerTomatot.
+  Licensed under Creative Commons BY-NC-SA 4.0:
+  https://creativecommons.org/licenses/by-nc-sa/4.0/
+  You may use, share and adapt this file if you give credit, do not use it
+  commercially (no selling, paywalls or ad-funded re-hosting) and release
+  adaptations under the same license.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Unofficial, spoiler-light recruitment planner for Fire Emblem: Fortune's Weave, Part I.">
+  <title>Fortune's Weave · Part I Recruitment Planner</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z' fill='%23cfb079'/></svg>">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c101b;
+      --text: #f5f3fa;
+      --text-soft: #c1cddd;
+      --muted: #aeb7cb;
+      --panel-a: #1d2736;
+      --panel-b: #19202e;
+      --panel-inset: #151f2d;
+      --border: #3c485d;
+      --border-soft: #303f50;
+      --control: #273448;
+      --control-hover: #3d4b63;
+      --control-border: #53627b;
+      --field: #0f1828;
+      --accent: #cfb079;
+      --accent-hover: #dfc18e;
+      --accent-border: #f0d599;
+      --accent-ink: #172033;
+      --mint: #9ceccf;
+      --amber: #f3c997;
+      --lilac: #d8b9f4;
+      --focus: #b0d6ff;
+      --link: #e2c4ff;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* Base */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 70% 42% at 12% 0%, #273a5c 0, transparent 75%),
+        radial-gradient(ellipse 55% 38% at 100% 0%, #35233f 0, transparent 75%),
+        var(--bg);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; opacity: .45; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    a { color: var(--link); }
+    h1, h2, h3 { margin: 0; }
+    .noscript { margin: 16px; padding: 12px 16px; border-radius: 12px; background: #562d30; }
+
+    /* Layout & header */
+    .wrap { width: min(1190px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 96px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 22px; margin-bottom: 22px; }
+    .eyebrow { margin: 0; font-size: .72rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #d9b98c; }
+    h1 { margin: 8px 0 10px; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.08; letter-spacing: -.065em; }
+    .lede { margin: 0; max-width: 790px; font-size: .95rem; line-height: 1.55; color: #bec7d8; }
+    .edition { white-space: nowrap; padding: 7px 11px; font-size: .73rem; color: #d9c7aa; border: 1px solid #665740; border-radius: 100px; background: #30291e; }
+
+    /* Panels */
+    .panel, .section, .sheet {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--panel-a), var(--panel-b));
+      box-shadow: 0 16px 38px #0004;
+    }
+    .note { margin: 10px 0 0; font-size: .76rem; line-height: 1.5; color: var(--muted); }
+
+    /* Controls */
+    .controls { padding: 19px 20px; margin-bottom: 15px; }
+    .control-grid { display: grid; grid-template-columns: minmax(max-content, 1fr) repeat(3, minmax(130px, 190px)); align-items: end; gap: 15px; }
+    .field-label { display: block; margin: 0 0 8px; font-size: .75rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: #bdc8da; }
+    .optional { font-weight: 600; letter-spacing: .02em; text-transform: none; color: var(--muted); }
+    .lord-buttons { display: flex; flex-wrap: wrap; gap: 7px; }
+    .lord { padding: 11px 14px; font-weight: 700; color: #d3daeb; border: 1px solid var(--control-border); border-radius: 11px; background: var(--control); }
+    .lord[aria-pressed="true"] { color: var(--accent-ink); border-color: var(--accent-border); background: var(--accent); box-shadow: 0 0 0 2px #ccac6b55; }
+    .field { width: 100%; padding: 11px 12px; color: #f8f9fc; border: 1px solid #56647b; border-radius: 11px; background: var(--field); }
+    .field::placeholder { color: #7787a1; }
+    .field[aria-invalid="true"] { border-color: #e0806f; box-shadow: 0 0 0 2px #e0806f40; }
+    .date-field { display: flex; gap: 6px; }
+    .date-field .field { min-width: 0; text-align: center; }
+    .step-btn { flex: 0 0 40px; font-weight: 800; color: #f1f3f8; border: 1px solid var(--control-border); border-radius: 11px; background: var(--control); }
+    .step-btn:not(:disabled):hover { background: var(--control-hover); }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+    .stat { padding: 16px 18px; }
+    .stat strong { display: block; font-size: 2rem; line-height: 1.2; letter-spacing: -.055em; }
+    .stat small { font-size: .77rem; color: #b4bed2; }
+    .stat.good strong { color: var(--mint); }
+    .stat.warm strong { color: var(--amber); }
+    .stat.purple strong { color: var(--lilac); }
+
+    /* Buttons */
+    .btn { padding: 10px 12px; font-size: .8rem; font-weight: 700; color: #f1f3f8; border: 1px solid #536078; border-radius: 10px; background: #2b3950; }
+    .btn:hover { background: var(--control-hover); }
+    .btn.primary { color: #1a202b; border-color: #f1d397; background: #c8ad7a; }
+    .btn.primary:hover { background: var(--accent-hover); }
+    .actions { display: flex; flex-wrap: wrap; gap: 7px; }
+
+    /* Toolbar */
+    .toolbar { padding: 14px 18px; margin: 18px 0; }
+    .tool-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .tool-row #searchInput { flex: 1 1 220px; max-width: 310px; }
+    .tool-row #sortSelect { flex: 0 1 230px; max-width: 230px; }
+    .view-toggle { display: flex; gap: 8px; }
+    .tab { padding: 10px 16px; font-weight: 800; color: #dbe4f1; border: 1px solid #4f5c70; border-radius: 100px; background: #222e40; }
+    .tab[aria-pressed="true"] { color: #17202d; border-color: #ebcf9c; background: #dcbd89; }
+    .tool-row-secondary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+    .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .legend small { margin-right: 3px; color: #b7c1d5; }
+    .rank-filter { padding: 5px 9px; font-size: .75rem; font-weight: 800; color: var(--t-fg); border: 1px solid var(--t-border); border-radius: 8px; background: var(--t-bg); }
+    .rank-filter[aria-pressed="true"] { outline: 2px solid var(--t-fg); outline-offset: 1px; }
+    .rank-filter--all { --t-border: #607087; --t-fg: #d0d8eb; --t-bg: transparent; }
+    .toggle { display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; color: #d5dceb; cursor: pointer; }
+    .toggle input { width: 16px; height: 16px; margin: 0; accent-color: #b99ae6; }
+
+    /* Recruit sections */
+    .section { padding: 19px 20px; margin: 14px 0; }
+    .section.ready { border-color: #408876; background: linear-gradient(135deg, #173630, #1a2231 60%); }
+    .section.locked { background: linear-gradient(135deg, #30272b, #1a2230 60%); }
+    .sec-head { display: flex; align-items: start; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+    .sec-head h2 { font-size: 1.18rem; letter-spacing: -.02em; }
+    .sec-head p { margin: 5px 0 0; font-size: .8rem; line-height: 1.5; color: #b4bfd0; }
+    .count { min-width: 38px; padding: 5px 10px; text-align: center; font-size: .8rem; font-weight: 800; border: 1px solid #536073; border-radius: 100px; background: #29374a; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .empty { grid-column: 1 / -1; margin: 0; padding: 24px; font-size: .86rem; line-height: 1.6; color: #afbdd0; border: 1px dashed #4d5a6e; border-radius: 11px; background: #14202c94; }
+
+    /* Character cards */
+    .person { min-width: 0; padding: 15px; border: 1px solid #414e62; border-left: 5px solid var(--t-border); border-radius: 13px; background: linear-gradient(130deg, var(--t-bg), #1c2737 55%); }
+    .person.urgent { box-shadow: inset 0 0 0 1px #d89d7180; }
+    .person-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .name-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .person h3 { font-size: 1.05rem; letter-spacing: -.02em; overflow-wrap: anywhere; }
+    .star { flex-shrink: 0; padding: 2px 3px; font-size: 1.6rem; line-height: 1; color: #8997ae; border: 0; background: transparent; }
+    .star[aria-pressed="true"] { color: #ffc3a3; }
+    .rank { white-space: nowrap; padding: 5px 10px; font-size: .73rem; font-weight: 800; color: var(--t-fg); border: 1px solid var(--t-border); border-radius: 100px; background: var(--t-bg); }
+    .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+    .chip { display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; font-size: .79rem; color: #d5dceb; border: 1px solid #506076; border-radius: 9px; background: #1b2839; cursor: pointer; }
+    .chip input { width: 15px; height: 15px; margin: 0; accent-color: #83dabe; }
+    .chip.done { color: #b7f6df; border-color: #4b9d87; background: #183e38; }
+    .mini { font-size: .78rem; line-height: 1.5; color: #b7c2d6; }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .badge { display: inline-flex; align-items: center; padding: 4px 8px; font-size: .75rem; font-weight: 700; line-height: 1.35; border: 1px solid; border-radius: 7px; }
+    .badge--info { color: #c9d4e6; border-color: #4d5c74; background: #2a364a80; }
+    .badge--deadline { color: #ffcf94; border-color: #91633e; background: #5b3e214a; }
+    .badge--urgent { color: #ffc1af; border-color: #9a5153; background: #562d304c; }
+    .badge--done { color: #b7f6df; border-color: #4b9d87; background: #183e38; }
+    .badge--past { color: #9aa6ba; border-color: #3f4b5f; background: transparent; }
+    .conditions { margin-top: 11px; font-size: .78rem; }
+    .conditions > summary { font-weight: 700; color: #d7dcea; cursor: pointer; }
+    .conditions p { margin: 8px 0 0; line-height: 1.58; color: var(--text-soft); }
+    .reqs { margin: 8px 0 0; padding: 0; list-style: none; }
+    .reqs li { position: relative; padding: 4px 0 4px 20px; line-height: 1.5; color: var(--text-soft); }
+    .reqs li::before { content: '○'; position: absolute; left: 2px; color: #8c9ab0; }
+    .reqs li.done { color: #b7f6df; }
+    .reqs li.done::before { content: '✓'; color: var(--mint); }
+    .reqs li.later::before { content: '•'; }
+    .progress, .hint-note { color: var(--muted); }
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-top: 13px; padding-top: 10px; border-top: 1px solid #405068; }
+    .status { font-size: .77rem; color: #c7d0df; }
+    .status.good { color: var(--mint); }
+    .status.wait { color: #ffd19c; }
+    .mark { white-space: nowrap; padding: 7px 10px; font-size: .75rem; font-weight: 700; color: #d5dfef; border: 1px solid var(--control-border); border-radius: 8px; background: #28384d; }
+    .mark:hover { background: #415471; }
+
+    /* Spoilers */
+    .spoiler { margin-top: 4px; }
+    .spoiler > summary { display: inline-block; padding: 2px 8px; font-size: .72rem; font-weight: 700; color: #e6d3ff; list-style: none; border: 1px dashed #7a64a3; border-radius: 6px; background: #2e2540; cursor: pointer; }
+    .spoiler > summary::-webkit-details-marker { display: none; }
+    .spoiler > summary::after { content: ' · show'; font-weight: 600; color: #b9a6d8; }
+    .spoiler[open] > summary::after { content: ' · hide'; }
+    .spoiler-text { display: block; margin-top: 4px; line-height: 1.5; color: var(--text-soft); }
+
+    /* Collapsible sheets */
+    .sheet { margin: 14px 0; }
+    .sheet > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 17px 22px; list-style: none; cursor: pointer; }
+    .sheet > summary::-webkit-details-marker { display: none; }
+    .sheet > summary::after { content: '▾'; font-size: 1.3rem; color: #e6c697; }
+    .sheet[open] > summary::after { content: '▴'; }
+    .sheet-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 1rem; }
+    .sheet .inner { padding: 16px 21px 21px; border-top: 1px solid #374359; }
+    .pill { padding: 5px 9px; font-size: .72rem; font-weight: 800; color: #afeedb; border: 1px solid #578274; border-radius: 100px; background: #1b3836; }
+    .sheet-info { margin: 0 0 12px; font-size: .82rem; line-height: 1.55; color: #b9c5d7; }
+    .how-to { margin: 0; padding-left: 20px; font-size: .85rem; line-height: 1.6; color: var(--text-soft); }
+    .how-to li + li { margin-top: 4px; }
+
+    /* Key dates */
+    .timeline { margin: 0; padding: 0; list-style: none; }
+    .timeline li { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-soft); }
+    .timeline li:last-child { border-bottom: 0; }
+    .timeline-date { font-weight: 800; font-variant-numeric: tabular-nums; color: #f3cea0; }
+    .timeline strong { display: block; font-size: .86rem; }
+    .timeline small { display: block; margin-top: 2px; font-size: .75rem; color: #aab7c8; }
+    .timeline .today-row .timeline-date, .timeline .today-row strong { color: var(--mint); }
+
+    /* Shopping list */
+    .total { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 0 10px; padding: 11px 13px; border: 1px solid #566276; border-radius: 11px; background: #2b3342; }
+    .total strong { font-size: 1.35rem; color: #f3cea0; }
+    .shopping-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; margin-top: 14px; }
+    .shopping-col { padding: 14px; border: 1px solid #3b4960; border-radius: 12px; background: var(--panel-inset); }
+    .shopping-col h3 { margin: 0 0 6px; font-size: 1rem; }
+    .shopping-col h3:not(:first-child) { margin-top: 18px; }
+    .shopping-row { padding: 10px 0; border-bottom: 1px solid var(--border-soft); }
+    .shopping-row:last-child { border-bottom: 0; }
+    .row-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .84rem; font-weight: 700; }
+    .row-sub { display: block; margin-top: 4px; font-size: .74rem; line-height: 1.45; color: #aab7c8; }
+    .have-label { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: .78rem; color: #b7c2d6; }
+    .have { width: 72px; padding: 5px 8px; font-size: .82rem; color: #fff; border: 1px solid #5b6a80; border-radius: 7px; background: #0e1622; }
+    .stepper { display: flex; flex-shrink: 0; align-items: center; gap: 7px; }
+    .stepper button { width: 28px; height: 28px; font-weight: 800; color: #fff; border: 1px solid #65758e; border-radius: 7px; background: #293c4f; }
+    .stepper span { min-width: 36px; text-align: center; font-size: .77rem; }
+    .task-check { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; }
+    .task-check input { width: 16px; height: 16px; margin: 0; accent-color: #83dabe; }
+    .shop-empty { margin: 0; padding: 10px 0; font-size: .85rem; color: #b7c1d1; }
+
+    /* Recruited, data, footer, toast */
+    .manage { display: flex; flex-wrap: wrap; gap: 8px; }
+    .manage-chip { display: flex; align-items: center; gap: 7px; padding: 7px 10px; font-size: .8rem; border: 1px solid #526074; border-radius: 8px; background: #263244; }
+    .manage-chip button { padding: 5px 7px; font-size: .72rem; color: #fff; border: 0; border-radius: 6px; background: #526479; }
+    .data-panel { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; margin: 14px 0; }
+    .data-panel h2 { font-size: 1rem; }
+    .data-panel p { max-width: 560px; margin: 4px 0 0; font-size: .78rem; line-height: 1.5; color: var(--muted); }
+    .footer { margin-top: 24px; font-size: .78rem; line-height: 1.65; color: #a8b3c7; }
+    .footer p { margin: 0 0 8px; }
+    .footer strong { color: #dbe3f3; }
+    .toast-region { position: fixed; left: 50%; bottom: 18px; z-index: 10; width: max-content; max-width: calc(100% - 32px); transform: translateX(-50%); }
+    .toast { display: flex; align-items: center; gap: 12px; padding: 11px 14px; font-size: .85rem; color: #e9fff7; border: 1px solid #4b9d87; border-radius: 12px; background: #173a35; box-shadow: 0 10px 30px #0008; }
+    .toast button { padding: 6px 10px; font-size: .78rem; font-weight: 800; color: var(--accent-ink); border: 0; border-radius: 8px; background: var(--accent); }
+
+    /* Renown colours (cards and filter buttons) */
+    .r2 { --t-border: #4bb69e; --t-fg: #a4efdd; --t-bg: #173d39; }
+    .r3 { --t-border: #5aaced; --t-fg: #b2deff; --t-bg: #1a3850; }
+    .r4 { --t-border: #8295ed; --t-fg: #c8d2ff; --t-bg: #293252; }
+    .r5 { --t-border: #a486f7; --t-fg: #decfff; --t-bg: #352a4c; }
+    .r6 { --t-border: #cb88dc; --t-fg: #f0c5ff; --t-bg: #402849; }
+    .r7 { --t-border: #ef88be; --t-fg: #ffd1e7; --t-bg: #45293e; }
+    .r8 { --t-border: #eba568; --t-fg: #ffdbac; --t-bg: #493226; }
+    .r9 { --t-border: #e4cf6f; --t-fg: #fff0af; --t-bg: #423d25; }
+    .r10 { --t-border: #d78175; --t-fg: #ffc6bf; --t-bg: #492e30; }
+
+    @media (max-width: 920px) {
+      .control-grid { grid-template-columns: repeat(3, 1fr); }
+      .lord-field { grid-column: 1 / -1; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .wrap { padding-top: 22px; }
+      .header { display: block; }
+      .edition { display: inline-block; margin-top: 12px; }
+      .control-grid { grid-template-columns: 1fr 1fr; }
+      .date-wrap { grid-column: 1 / -1; }
+      .cards, .shopping-grid { grid-template-columns: 1fr; }
+      .controls, .toolbar, .section, .data-panel { padding: 15px; }
+      .stat { padding: 13px; }
+      .person { padding: 12px; }
+      .view-toggle, .tool-row #searchInput, .tool-row #sortSelect { flex: 1 1 100%; max-width: none; }
+      .sheet > summary { padding: 16px; }
+      .sheet .inner { padding: 14px 15px 15px; }
+      .timeline li { grid-template-columns: 52px 1fr; }
+      .timeline li > .badge { grid-column: 2; justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+<noscript><p class="noscript">This planner needs JavaScript to run.</p></noscript>
+<main class="wrap">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Fire Emblem: Fortune's Weave · Part I</p>
+      <h1>Recruitment Planner</h1>
+      <p class="lede">Keep the recruitable characters on your Part I path organized: see who you can pick up and what each one still needs. Story details stay hidden; deadlines don't.</p>
+    </div>
+    <span class="edition">Unofficial fan tool · v6.2</span>
+  </header>
+
+  <details class="sheet" id="howTo">
+    <summary><h2 class="sheet-title">How to use</h2></summary>
+    <div class="inner">
+      <ol class="how-to">
+        <li>Pick the lord whose Part I path you're playing. Each path keeps its own progress.</li>
+        <li>Enter your Renown. Chapter and in-game date are optional extras.</li>
+        <li>Tick each Support rank as you reach it with a character. A card moves to the top section once its Support and Renown (and chapter, if you entered one) are met.</li>
+        <li>Track items, requests and paralogues in <strong>Shopping list &amp; tasks</strong>. Each card's requirements show a ✓ for what's done.</li>
+        <li>Star characters (☆) to focus the shopping list and the Favorites view on them.</li>
+        <li>When someone joins, press <strong>Mark recruited</strong>. You can undo it straight away, or later under <strong>Recruited characters</strong>.</li>
+        <li>Hints and puzzle answers stay hidden until you tap <strong>Spoiler</strong>.</li>
+        <li>Progress is saved in this browser. Use <strong>Export backup</strong> to move it to another device.</li>
+      </ol>
+    </div>
+  </details>
+
+  <section class="panel controls" aria-label="Your playthrough">
+    <div class="control-grid">
+      <div class="lord-field">
+        <span class="field-label" id="lordLabel">Playing as</span>
+        <div class="lord-buttons" role="group" aria-labelledby="lordLabel">
+          <button type="button" class="lord" data-lord="Cai" aria-pressed="false">Cai</button>
+          <button type="button" class="lord" data-lord="Dietrich" aria-pressed="false">Dietrich</button>
+          <button type="button" class="lord" data-lord="Theodora" aria-pressed="false">Theodora</button>
+          <button type="button" class="lord" data-lord="Leda" aria-pressed="false">Leda</button>
+        </div>
+      </div>
+      <div>
+        <label class="field-label" for="renownInput">Renown</label>
+        <input class="field" id="renownInput" type="number" min="0" max="10" step="1" inputmode="numeric" placeholder="0–10">
+      </div>
+      <div>
+        <label class="field-label" for="chapterInput">Chapter <span class="optional">· optional</span></label>
+        <input class="field" id="chapterInput" type="number" min="1" max="20" step="1" inputmode="numeric" placeholder="Any">
+      </div>
+      <div class="date-wrap">
+        <label class="field-label" for="dateInput">In-game date <span class="optional">· optional</span></label>
+        <div class="date-field">
+          <button type="button" class="step-btn" data-date-step="-1" aria-label="One day earlier" disabled>−</button>
+          <input class="field" id="dateInput" type="text" placeholder="M/D" autocomplete="off" spellcheck="false" aria-describedby="dateHelp">
+          <button type="button" class="step-btn" data-date-step="1" aria-label="One day later" disabled>+</button>
+        </div>
+      </div>
+    </div>
+    <p class="note"><span id="routeNote"></span> Leave Chapter empty to ignore chapter requirements. <span id="dateHelp">The date (month/day, e.g. 9/17) only shows how close deadlines are. It never locks anything.</span></p>
+  </section>
+
+  <section class="stats" aria-label="Progress on this path">
+    <div class="panel stat good"><strong id="readyStat">0</strong><small>Thresholds met</small></div>
+    <div class="panel stat"><strong id="workingStat">0</strong><small>Support to build</small></div>
+    <div class="panel stat warm"><strong id="lockedStat">0</strong><small>Waiting on Renown/chapter</small></div>
+    <div class="panel stat purple"><strong id="recruitedStat">0</strong><small>Recruited</small></div>
+  </section>
+
+  <details class="sheet" id="datesPanel">
+    <summary><h2 class="sheet-title">Key dates <span class="pill" id="datesCount">0 dates</span></h2></summary>
+    <div class="inner">
+      <p class="sheet-info">In-game dates (month/day) that matter for the characters you haven't recruited yet. Paralogues first show up around Chapter 9 on Dietrich's path and Chapter 10 on the others. Enter today's in-game date above to see what's open. Day counts assume real-world month lengths.</p>
+      <div id="datesContent"></div>
+    </div>
+  </details>
+
+  <details class="sheet" id="shoppingPanel">
+    <summary><h2 class="sheet-title">Shopping list &amp; tasks <span class="pill" id="shoppingScope"></span></h2></summary>
+    <div class="inner">
+      <p class="sheet-info" id="shopIntro"></p>
+      <div id="shoppingContent"></div>
+    </div>
+  </details>
+
+  <section class="panel toolbar" aria-label="Find and filter characters">
+    <div class="tool-row">
+      <div class="view-toggle" role="group" aria-label="Show">
+        <button type="button" class="tab" data-view="all" aria-pressed="true">All recruits</button>
+        <button type="button" class="tab" data-view="favorites" aria-pressed="false">★ Favorites <span id="favoriteCount">0</span></button>
+      </div>
+      <input class="field" id="searchInput" type="search" placeholder="Find a character…" aria-label="Search characters">
+      <select class="field" id="sortSelect" aria-label="Sort characters">
+        <option value="urgent">Sort: Deadlines first</option>
+        <option value="support-asc">Support: Low → High</option>
+        <option value="support-desc">Support: High → Low</option>
+        <option value="renown-asc">Renown: Low → High</option>
+        <option value="renown-desc">Renown: High → Low</option>
+        <option value="name-asc">Name: A → Z</option>
+        <option value="name-desc">Name: Z → A</option>
+      </select>
+    </div>
+    <div class="tool-row-secondary">
+      <div class="legend" role="group" aria-label="Filter by required Renown">
+        <small>Required Renown:</small>
+        <button type="button" class="rank-filter rank-filter--all" data-filter-rank="all" aria-pressed="true">All</button>
+        <button type="button" class="rank-filter r2" data-filter-rank="2" aria-pressed="false">R2</button>
+        <button type="button" class="rank-filter r3" data-filter-rank="3" aria-pressed="false">R3</button>
+        <button type="button" class="rank-filter r4" data-filter-rank="4" aria-pressed="false">R4</button>
+        <button type="button" class="rank-filter r5" data-filter-rank="5" aria-pressed="false">R5</button>
+        <button type="button" class="rank-filter r6" data-filter-rank="6" aria-pressed="false">R6</button>
+        <button type="button" class="rank-filter r7" data-filter-rank="7" aria-pressed="false">R7</button>
+        <button type="button" class="rank-filter r8" data-filter-rank="8" aria-pressed="false">R8</button>
+        <button type="button" class="rank-filter r9" data-filter-rank="9" aria-pressed="false">R9</button>
+        <button type="button" class="rank-filter r10" data-filter-rank="10" aria-pressed="false">R10</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="spoilerToggle"> Show all spoilers</label>
+    </div>
+  </section>
+
+  <section class="section ready" aria-labelledby="readyHeading">
+    <div class="sec-head">
+      <div>
+        <h2 id="readyHeading">✦ Support &amp; Renown met</h2>
+        <p>Talk to them once their remaining tasks are done. “✓ Ready to recruit” means every trackable task is finished.</p>
+      </div>
+      <span class="count" id="readyCount">0</span>
+    </div>
+    <div class="cards" id="readyList"></div>
+  </section>
+
+  <section class="section" aria-labelledby="workingHeading">
+    <div class="sec-head">
+      <div>
+        <h2 id="workingHeading">Support in progress</h2>
+        <p>Characters who need Support 3 get separate ticks for ranks 2 and 3.</p>
+      </div>
+      <span class="count" id="workingCount">0</span>
+    </div>
+    <div class="cards" id="workingList"></div>
+  </section>
+
+  <section class="section locked" aria-labelledby="lockedHeading">
+    <div class="sec-head">
+      <div>
+        <h2 id="lockedHeading">Support done · waiting on Renown or chapter</h2>
+        <p>These move up once your Renown (and chapter, if entered) is high enough.</p>
+      </div>
+      <span class="count" id="lockedCount">0</span>
+    </div>
+    <div class="cards" id="lockedList"></div>
+  </section>
+
+  <details class="sheet" id="recruitedPanel">
+    <summary><h2 class="sheet-title">Recruited characters <span class="pill" id="recruitedCount">0 recruited</span></h2></summary>
+    <div class="inner">
+      <div class="sheet-info" id="autoJoin"></div>
+      <div class="manage" id="recruitedList"></div>
+    </div>
+  </details>
+
+  <section class="panel data-panel" aria-labelledby="dataHeading">
+    <div>
+      <h2 id="dataHeading">Your data</h2>
+      <p>Progress for all four paths is saved in this browser only. Export a backup to move it to another device or browser, or before clearing your browsing data.</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" id="exportBtn">Export backup</button>
+      <button type="button" class="btn" id="importBtn">Import backup</button>
+      <button type="button" class="btn" id="resetBtn">Start fresh</button>
+      <input type="file" id="importFile" accept=".json,application/json" hidden>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p><strong>Dates are in-game month/day (M/D), not real-world dates.</strong> Part I only; later recruitments are left out to avoid spoilers.</p>
+    <p>Recruitment data checked on 26 Oct 2026 against
+      <a href="https://www.rpgsite.net/guide/21391-fire-emblem-fortunes-weave-recruitment-guide-all-characters-in-game-how-to-recruit-them" target="_blank" rel="noopener noreferrer">RPG Site's recruitment guide</a>,
+      <a href="https://serenesforest.net/fortunes-weave/characters/recruitment/" target="_blank" rel="noopener noreferrer">Serenes Forest</a>,
+      <a href="https://lum.gg/fire-emblem-fortunes-weave/recruitment" target="_blank" rel="noopener noreferrer">LUM</a> and
+      <a href="https://www.rpgsite.net/guide/21387-fire-emblem-fortunes-weave-paralogues-how-to-access-all-paralogue-battles-where-to-find-them" target="_blank" rel="noopener noreferrer">RPG Site's paralogue guide</a>.
+      Where they disagree, the character's details say so.</p>
+    <p>Built with the help of AI assistants (ChatGPT and Claude). Recruitment data was checked against community guides, but it may still contain mistakes — corrections welcome.</p>
+    <p>Unofficial fan-made tool. Not affiliated with or endorsed by Nintendo or the game's developers. Fire Emblem is a trademark of Nintendo. No game assets are used, and all hints are written in our own words.</p>
+    <p>Privacy: your progress stays in this browser. The page sends nothing anywhere and loads nothing from the internet.</p>
+    <p>© 2026 TheKillerTomatot · Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer license">CC BY-NC-SA 4.0</a>. Free to use, share and adapt with credit, non-commercially, under the same license. Please don't sell it, put it behind a paywall or re-host it with ads.</p>
+  </footer>
+</main>
+<div class="toast-region" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ===========================================================================
+     Game data. Edit here when the guides change; checkData() flags typos in
+     the browser console.
+     ======================================================================== */
+
+  const LORDS = ['Cai', 'Dietrich', 'Theodora', 'Leda'];
+
+  // Recruitable characters per path: Name | Support | Renown | first chapter.
+  // "3-4" means the guides disagree (Serenes Forest lists 3, LUM lists 4). The
+  // earlier chapter is used, so nobody looks locked while they may be available.
+  const ROUTE_TABLES = {
+    Cai: `
+      Alexandra|2|7|7
+      Benditz|3|9|6
+      Catania|3|10|3
+      Dadao|3|7|4-5
+      Dante|3|10|3-5
+      Diego|3|10|3
+      Esmeralda|2|7|5
+      Fianna|3|8|4
+      Goliath|3|7|3-4
+      Guzran|1|2|3
+      Halvin|3|5|4-5
+      Inyoni|3|8|8
+      Io|3|10|3
+      Jasmine|1|8|6
+      Jester|3|10|3-4
+      Kiroc|3|8|6
+      Lilian|2|8|4
+      Loretta|3|7|3
+      Ludia|3|9|4
+      Lysander|3|8|4
+      Majide|2|5|5
+      Mikaela|3|5|5
+      Mu|3|9|4
+      Nezha|3|6|4-5
+      Ninae|3|6|3
+      Noctula|1|4|3
+      Nuzzuo|2|6|7
+      Nydine|1|6|3
+      Olympia|3|8|4
+      Peppe|1|9|3
+      Seteth|3|6|3
+      Simon|3|8|4-5
+      Sirocco|3|9|4
+      Sofia|3|9|3
+      Ursula|3|10|4
+      Yang Jie|2|3|3
+      Zarcone|3|8|5`,
+    Dietrich: `
+      Alexandra|3|8|7
+      Benditz|2|7|5
+      Buccar|3|8|4
+      Catania|1|8|4
+      Dadao|3|10|4
+      Dante|2|8|4
+      Diego|3|9|4
+      Fianna|3|7|4
+      Gaitz|3|10|4
+      Goliath|3|6|4
+      Guzran|3|8|4
+      Halvin|3|9|4
+      Inyoni|3|8|8
+      Io|2|3|4
+      Jasmine|3|9|6
+      Jester|3|6|4
+      Kiroc|1|4|6
+      Lilian|2|8|4
+      Loretta|3|9|4
+      Ludia|3|9|4
+      Lysander|3|6|4
+      Majide|3|8|4
+      Mu|3|7|4-5
+      Nezha|3|10|4
+      Ninae|3|8|4
+      Noctula|1|6|4
+      Nuzzuo|1|9|8
+      Nydine|2|5|4
+      Olympia|3|6|4-5
+      Peppe|3|8|4
+      Peter|3|8|4
+      Sha Lan|3|10|4
+      Simon|3|7|4
+      Sirocco|3|9|4-5
+      Sofia|3|9|4
+      Tialla|3|9|4
+      Ultand|3|5|4
+      Ursula|3|7|4
+      Yang Jie|1|2|4
+      Zarcone|3|7|4`,
+    Theodora: `
+      Alexandra|1|6|8
+      Benditz|1|8|6
+      Buccar|3|8|5
+      Catania|3|7|5
+      Dadao|2|5|5
+      Dante|3|6|5
+      Diego|2|8|5
+      Esmeralda|3|9|5
+      Fianna|3|9|5
+      Goliath|3|9|5
+      Guzran|3|8|5
+      Halvin|3|7|5
+      Inyoni|1|9|9
+      Io|3|10|5
+      Jasmine|3|8|7
+      Jester|3|9|5
+      Kiroc|3|10|6-7
+      Loretta|3|5|5
+      Ludia|3|7|5
+      Majide|3|8|5
+      Mikaela|3|8|5
+      Mu|3|9|5
+      Nezha|2|6|5
+      Ninae|3|6|5
+      Noctula|1|3|5
+      Nuzzuo|1|6|9
+      Nydine|3|5|5
+      Olympia|3|9|5
+      Peppe|2|7|5
+      Peter|3|7|5
+      Seteth|3|6|5
+      Simon|3|7|5
+      Sirocco|1|5|5
+      Sofia|1|2|5
+      Tialla|3|10|5
+      Ultand|3|6|5
+      Ursula|3|9|5
+      Yang Jie|3|9|5
+      Zarcone|1|4|5`,
+    Leda: `
+      Alexandra|3|10|7
+      Benditz|3|7|5
+      Catania|1|2|4
+      Dadao|2|5|4
+      Dante|3|10|4
+      Diego|3|8|4
+      Esmeralda|3|6|4
+      Fabio|3|9|4
+      Fianna|3|5|4-5
+      Goliath|3|10|4
+      Guzran|1|3|4
+      Halvin|3|7|4
+      Inyoni|1|7|9
+      Io|1|6|4
+      Jasmine|2|4|6
+      Jester|3|10|4
+      Kiroc|1|4|5
+      Lilian|2|7|4
+      Loretta|3|5|4
+      Ludia|3|7|4
+      Lysander|3|7|4
+      Majide|3|9|4
+      Mikaela|3|6|4
+      Nezha|3|9|4
+      Ninae|3|8|4
+      Noctula|3|8|4
+      Nuzzuo|3|9|8
+      Nydine|3|10|4
+      Peter|3|10|4
+      Seteth|3|10|4
+      Sha Lan|3|8|4
+      Simon|3|6|4
+      Sofia|3|7|4
+      Tialla|3|8|4
+      Ultand|3|8|4
+      Yang Jie|3|8|4
+      Zarcone|2|5|4`,
+  };
+
+  // Joins through the path's recruitment tutorial (no extra requirements).
+  const TUTORIAL = { Cai: 'Guzran', Dietrich: 'Yang Jie', Theodora: 'Sofia', Leda: 'Catania' };
+
+  // Join automatically, so they are not in the tables above. Only shown behind a spoiler.
+  const AUTO_JOIN = {
+    Cai: ['Cai', 'Peter', 'Tialla', 'Ultand'],
+    Dietrich: ['Dietrich', 'Fabio', 'Esmeralda', 'Mikaela'],
+    Theodora: ['Theodora', 'Bonaventure', 'Tobias', 'Lilian', 'Lysander'],
+    Leda: ['Leda', 'Buccar', 'Mu', 'Sirocco', 'Olympia'],
+  };
+
+  const ROUTE_NOTES = { Theodora: 'Part I ends earlier on this path (10/24).' };
+
+  // Requirement builders. Amounts and item names can be a single value or a
+  // per-path map such as { Cai: 2, Dietrich: 3, Theodora: 3, Leda: 3 }.
+  const gold = (amount, hint) => ({ type: 'gold', amount, hint });
+  const item = (name, qty) => ({ type: 'item', name, qty });
+  const request = (qty = 1) => ({ type: 'request', qty });
+  const paralogue = owner => ({ type: 'paralogue', owner });
+  // Happens in the recruitment conversation itself; the answer is a spoiler.
+  const talk = (text, answer) => ({ type: 'talk', text, answer });
+
+  const REQUIREMENTS = {
+    Buccar: [paralogue('Leda')],
+    Dadao: [item('Kothar Gar', 2)],
+    Dante: [gold(8000)],
+    Diego: [paralogue('Orchel')],
+    Esmeralda: [request()],
+    Fabio: [paralogue('Dietrich'), talk('Show Fabio a valuable item (you get it back)', 'A Da Mina weapon worked for one guide writer.')],
+    Fianna: [gold(3000)],
+    Gaitz: [paralogue('Bertrand')],
+    Goliath: [item("Giant's Meat", 3)],
+    Halvin: [item('Dates', 10)],
+    Inyoni: [gold({ Cai: 6000, Dietrich: 6000, Theodora: 4000, Leda: 3000 })],
+    Io: [gold({ Cai: 4000, Dietrich: 800, Theodora: 4000, Leda: 1500 })],
+    Jasmine: [gold({ Cai: 2000, Dietrich: 5000, Theodora: 5000, Leda: 500 })],
+    Jester: [request(3)],
+    Kiroc: [item('Pure Water', { Cai: 8, Dietrich: 3, Theodora: 8, Leda: 3 })],
+    Lilian: [gold(5000)],
+    Loretta: [item('Iron Sword', 3)],
+    Ludia: [request()],
+    Lysander: [item('Iron Spear', 5)],
+    Majide: [talk("Answer Majide's question 3 times", 'Agree every time.')],
+    Mikaela: [gold(3000)],
+    Mu: [item('Glirmosa', 3)],
+    Nezha: [item('Sandworm Meat', 3)],
+    Ninae: [item('Paradise Fish', 1)],
+    Nuzzuo: [item('Iron Bow', { Cai: 3, Dietrich: 2, Theodora: 3, Leda: 3 })],
+    Nydine: [item({ Cai: 'Bronze Axe', Dietrich: 'Bronze Axe', Theodora: 'Iron Axe', Leda: 'Iron Axe' }, { Cai: 2, Dietrich: 2, Theodora: 3, Leda: 3 })],
+    Olympia: [request(3)],
+    Peppe: [paralogue('Bertrand')],
+    Peter: [request()],
+    'Sha Lan': [paralogue('Anatolia'), talk("Answer Sha Lan's 3 questions correctly", 'Saramis, then Da Mina, then the grounded ship.')],
+    Seteth: [request()],
+    Simon: [gold(500), talk("Call Simon's coin toss", 'Pick tails.')],
+    Sirocco: [request()],
+    Tialla: [paralogue('Cai'), gold(3000)],
+    Ultand: [request()],
+    Ursula: [paralogue('Talimun'), talk("Answer Ursula's question 3 times", 'Agree every time.')],
+    'Yang Jie': [talk("Answer Yang Jie's 3 questions correctly", 'Cheese, then the (full) moon. Any answer works for the third; Potatoes is fine.')],
+    Zarcone: [gold(10, 'The fee starts high, but you can haggle it down to 10 G. How much you pay makes no difference.')],
+  };
+
+  // Per path: [days the quest can be accepted, last day to clear it].
+  // Ranges are "M/D-M/D"; several ranges are separated by commas.
+  const PARALOGUES = {
+    Leda: {
+      where: 'Leda, at (Lower) Temple Row.',
+      note: 'The battle itself happens on 9/8; accepting early just lets you skip ahead.',
+      routes: { Dietrich: ['9/2-9/8', '9/8'], Theodora: ['9/2-9/8', '9/8'] },
+    },
+    Bertrand: {
+      where: 'Gabriel, near the arena entrance.',
+      prerequisite: "Visit Fezzan Gate beforehand, so the quest's Location condition is ticked.",
+      routes: { Cai: ['9/17-9/25', '9/25'], Dietrich: ['9/17', '9/17'], Theodora: ['9/17-9/25', '9/25'] },
+    },
+    Talimun: {
+      where: 'Talimun, near the port by Vandahl Trading Co.',
+      routes: {
+        Cai: ['9/17-9/22, 10/1-10/10', '10/12'],
+        Dietrich: ['9/17-9/22, 10/1-10/10', '10/12'],
+        Theodora: ['9/17-9/22, 10/1-10/10', '10/12'],
+      },
+    },
+    Anatolia: {
+      where: 'Anatolia, in City Streets on the east side of Dagsion.',
+      routes: { Dietrich: ['10/5-10/14', '10/17'], Leda: ['10/5-10/14', '10/17'] },
+    },
+    Cai: {
+      where: 'Cai, in City Streets near the south-east exit of Dagsion.',
+      note: 'The battle itself happens on 10/22.',
+      routes: { Dietrich: ['10/16-10/22', '10/22'], Theodora: ['10/16-10/22', '10/22'], Leda: ['10/16-10/22', '10/22'] },
+    },
+    Dietrich: {
+      where: 'Fabio, near the arena.',
+      routes: { Leda: ['10/16-10/22', '11/1'] },
+    },
+    Orchel: {
+      where: 'Orchel, at Lower Temple Row.',
+      routes: { Cai: ['10/18-10/20', '10/21'], Dietrich: ['10/18-10/25', '10/27'], Theodora: ['10/18-10/24', '10/24'], Leda: ['10/18-10/25', '10/27'] },
+    },
+  };
+
+  // Story gates: recruitable only from this chapter (and in-game date, where known).
+  const STORY_GATES = {
+    Gaitz: { Dietrich: { chapter: 12 } },
+    Fabio: { Leda: { chapter: 12, date: '11/4' } },
+  };
+  // Must be recruited before this date.
+  const CUTOFFS = { Lilian: '10/24', Lysander: '10/24' };
+  // Roughly when they start showing up in Dagsion.
+  const APPEARS = { Benditz: '4/11', Kiroc: '5/1-5/4', Jasmine: '5/8', Alexandra: '5/29', Nuzzuo: '7/1', Inyoni: '7/10' };
+
+  // Guide hints, written in our own words. Always shown behind a spoiler.
+  const REQUEST_HINTS = {
+    Esmeralda: 'Defeat the frenzied sea beasts at Cape Damasen, near the village of Fina in the north.',
+    Jester: 'Three hunts: the Bale Lacerators at Dada Plains, Corpse-Gaol Dunanzo at Valhalla Mine and the Underworld Wanderers at Whispering Peak.',
+    Ludia: 'Travel to Callianeira Port, south-east of Dagsion.',
+    Olympia: 'Bring back three things: Scarlet Firedrops (Daybreak Plains), an Aurum Rose (Klytius Plains) and the Azure Heart (Valhalla Mine).',
+    Peter: 'Search Mount Aegina in eastern Idyia for a rare Ginji.',
+    Seteth: 'Defeat the Dusk-Damned Piccolos at Mount Ouranos in the south.',
+    Sirocco: "Find the Secret Altar past the Masked Woods, near Aurora's Temple in southern Melias.",
+    Ultand: "Recover Mother's Gift from the Corrois Fort Ruins, north-west near Grand Aragon.",
+  };
+  const ITEM_HINTS = {
+    Dates: "Found around the western desert. On Cai's path, a Chapter 8 subquest opens up a spot you can farm.",
+    "Giant's Meat": 'Dropped by giants in the western regions: look for skirmishes with a giant icon on the world map. Sand-Shadow Fort always has one, and Luxury Meat Crates can contain it.',
+    Glirmosa: "Grows around western Pasithea: Mount Orgus Trail, Rear Mountain Path, Forest of No Return and Giant's Mount. Rarely found at Rolling Breeze Hill near Dagsion.",
+    'Kothar Gar': 'Found just outside Dagsion, or at Kothar Lake further south.',
+    'Paradise Fish': 'Catch it at Lake Brontes (Saveilon, near Megaira), on the far side of Valhalla Mine.',
+    'Sandworm Meat': "Hunt sandworms in the western desert or Heretics' Cave, or buy it in Kira, a village near Ahm Lu.",
+  };
+
+  /* ===========================================================================
+     In-game calendar. Dates are month/day; day counts assume real-world
+     month lengths.
+     ======================================================================== */
+
+  const MONTH_ENDS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+
+  // "9/17" → day of the year, or null if it isn't a valid month/day.
+  function parseDate(text) {
+    const match = /^\s*(\d{1,2})\s*\/\s*(\d{1,2})\s*$/.exec(String(text ?? ''));
+    if (!match) return null;
+    const month = Number(match[1]);
+    const day = Number(match[2]);
+    if (month < 1 || month > 12) return null;
+    return day >= 1 && day <= MONTH_ENDS[month] - MONTH_ENDS[month - 1] ? MONTH_ENDS[month - 1] + day : null;
+  }
+
+  function formatDate(dayOfYear) {
+    const month = MONTH_ENDS.findIndex(end => dayOfYear <= end);
+    return `${month}/${dayOfYear - MONTH_ENDS[month - 1]}`;
+  }
+
+  // "9/17-9/22, 10/1-10/10" → [{ start, end }, …]
+  const parseRanges = text => text.split(',').map(range => {
+    const [start, end = start] = range.split('-').map(parseDate);
+    return { start, end };
+  });
+
+  const rangeText = ranges => ranges
+    .map(({ start, end }) => (start === end ? formatDate(start) : `${formatDate(start)}–${formatDate(end)}`))
+    .join(' or ');
+
+  /* ===========================================================================
+     Rosters, built once per path from the tables above.
+     ======================================================================== */
+
+  const pick = (value, lord) => (value !== null && typeof value === 'object' ? value[lord] : value);
+
+  // Support 3 recruits get separate ticks for ranks 2 and 3.
+  const ranksFor = person => (person.support === 3 ? [2, 3] : [person.support]);
+
+  function resolveRequirement(req, name, lord) {
+    switch (req.type) {
+      case 'gold':
+        return { ...req, amount: pick(req.amount, lord) };
+      case 'item':
+        return { ...req, name: pick(req.name, lord), qty: pick(req.qty, lord) };
+      case 'request':
+        return {
+          ...req,
+          id: `request:${name}`,
+          label: req.qty === 1 ? `${name}'s request` : `${name}'s ${req.qty} requests`,
+          hint: REQUEST_HINTS[name],
+        };
+      case 'paralogue': {
+        const { routes, ...details } = PARALOGUES[req.owner] ?? {};
+        const dates = routes?.[lord];
+        if (!dates) throw new Error(`No dates for ${req.owner}'s paralogue on ${lord}'s path.`);
+        return {
+          ...req,
+          ...details,
+          id: `paralogue:${req.owner}`,
+          qty: 1,
+          label: `${req.owner}'s Paralogue`,
+          windows: parseRanges(dates[0]),
+          clearBy: parseDate(dates[1]),
+        };
+      }
+      default:
+        return req;
+    }
+  }
+
+  function buildRoster(lord) {
+    return ROUTE_TABLES[lord].trim().split('\n').map(line => {
+      const [name, support, renown, chapters] = line.trim().split('|');
+      const [chapter, laterChapter = null] = chapters.split('-').map(Number);
+      const tutorial = TUTORIAL[lord] === name;
+      const gate = STORY_GATES[name]?.[lord] ?? null;
+      return {
+        name,
+        support: Number(support),
+        renown: Number(renown),
+        chapter,
+        laterChapter,
+        gate,
+        gateDate: gate?.date ? parseDate(gate.date) : null,
+        minChapter: Math.max(chapter, gate?.chapter ?? 0),
+        tutorial,
+        requirements: tutorial ? [] : (REQUIREMENTS[name] ?? []).map(req => resolveRequirement(req, name, lord)),
+        cutoff: CUTOFFS[name] ? parseDate(CUTOFFS[name]) : null,
+        appears: APPEARS[name] ? parseRanges(APPEARS[name])[0] : null,
+      };
+    });
+  }
+
+  const ROSTERS = Object.fromEntries(LORDS.map(lord => [lord, buildRoster(lord)]));
+
+  function checkData() {
+    const problems = [];
+    for (const lord of LORDS) {
+      const names = ROSTERS[lord].map(p => p.name);
+      if (new Set(names).size !== names.length) problems.push(`${lord}: a name appears twice`);
+      if (!names.includes(TUTORIAL[lord])) problems.push(`${lord}: tutorial unit ${TUTORIAL[lord]} is missing`);
+      for (const name of AUTO_JOIN[lord]) {
+        if (names.includes(name)) problems.push(`${lord}: ${name} joins automatically but is in the table`);
+      }
+      for (const p of ROSTERS[lord]) {
+        if (![p.support, p.renown, p.chapter].every(Number.isInteger)) problems.push(`${lord}: bad numbers for ${p.name}`);
+        for (const req of p.requirements) {
+          const amount = req.type === 'gold' ? req.amount : req.qty;
+          if (req.type !== 'talk' && !(amount > 0)) problems.push(`${lord}: ${p.name} has a ${req.type} without an amount`);
+          if (req.type === 'paralogue' && !(req.clearBy && req.windows.every(w => w.start && w.end))) {
+            problems.push(`${lord}: bad dates for ${req.label}`);
+          }
+        }
+      }
+    }
+    for (const name of Object.keys(REQUIREMENTS)) {
+      if (!LORDS.some(lord => ROSTERS[lord].some(p => p.name === name))) problems.push(`Requirements listed for unknown character ${name}`);
+    }
+    for (const problem of problems) console.error(`[Recruitment Planner data] ${problem}`);
+  }
+
+  /* ===========================================================================
+     HTML helpers. Every interpolated value is escaped unless it is already Html.
+     ======================================================================== */
+
+  class Html {
+    constructor(text) { this.text = text; }
+    toString() { return this.text; }
+  }
+  const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const toHtml = value =>
+    value instanceof Html ? value.text
+      : Array.isArray(value) ? value.map(toHtml).join('')
+        : value === null || value === undefined || value === false ? ''
+          : String(value).replace(/[&<>"']/g, char => ESCAPES[char]);
+  const html = (strings, ...values) => new Html(strings.reduce((out, str, i) => out + toHtml(values[i - 1]) + str));
+
+  const $ = id => document.getElementById(id);
+  const formatNumber = n => n.toLocaleString('en-US');
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+  /* ===========================================================================
+     State. The storage key and route shape are unchanged from v5, so existing
+     progress and backups load as they are.
+     ======================================================================== */
+
+  const STORAGE_KEY = 'fortunes-weave-recruitment-planner-v5';
+
+  const blankRoute = () => ({ checked: {}, favorites: [], recruited: [], renown: null, chapter: null, date: null, have: {}, taskProgress: {} });
+  const blankState = () => ({
+    version: 6,
+    lord: 'Cai',
+    settings: { revealSpoilers: false },
+    routes: Object.fromEntries(LORDS.map(lord => [lord, blankRoute()])),
+  });
+
+  function intInRange(value, min, max) {
+    if (typeof value !== 'number' && !(typeof value === 'string' && value.trim() !== '')) return null;
+    const n = Number(value);
+    return Number.isInteger(n) && n >= min && n <= max ? n : null;
+  }
+
+  function sanitiseRoute(raw, lord) {
+    const clean = blankRoute();
+    if (!raw || typeof raw !== 'object') return clean;
+    const people = ROSTERS[lord];
+    const names = new Set(people.map(p => p.name));
+    const knownNames = list => [...new Set((Array.isArray(list) ? list : []).filter(name => names.has(name)))];
+
+    for (const p of people) {
+      // A ticked rank implies the lower ones. This also migrates saves from when
+      // a character needed a higher rank than they do now.
+      const highest = Math.max(0, ...[1, 2, 3].filter(rank => raw.checked?.[`${p.name}:${rank}`] === true));
+      for (const rank of ranksFor(p)) if (rank <= highest) clean.checked[`${p.name}:${rank}`] = true;
+
+      // Progress is kept only for requirements that still exist.
+      for (const req of p.requirements) {
+        if (req.type === 'item') {
+          const have = intInRange(raw.have?.[req.name], 1, 9999);
+          if (have) clean.have[req.name] = have;
+        }
+        if (isTask(req)) {
+          const done = intInRange(raw.taskProgress?.[req.id], 1, 999);
+          if (done) clean.taskProgress[req.id] = Math.min(done, req.qty);
+        }
+      }
+    }
+    clean.favorites = knownNames(raw.favorites);
+    clean.recruited = knownNames(raw.recruited);
+    clean.renown = intInRange(raw.renown, 0, 10);
+    clean.chapter = intInRange(raw.chapter, 1, 20);
+    const day = parseDate(raw.date);
+    clean.date = day === null ? null : formatDate(day);
+    return clean;
+  }
+
+  function sanitiseState(raw) {
+    if (raw?.routes && typeof raw.routes === 'object') {
+      return {
+        version: 6,
+        lord: LORDS.includes(raw.lord) ? raw.lord : 'Cai',
+        settings: { revealSpoilers: raw.settings?.revealSpoilers === true },
+        routes: Object.fromEntries(LORDS.map(lord => [lord, sanitiseRoute(raw.routes[lord], lord)])),
+      };
+    }
+    // v3/v4 backups only covered Dietrich's path and kept its data at the top level.
+    if (raw?.checked && typeof raw.checked === 'object') {
+      const legacy = blankState();
+      legacy.lord = 'Dietrich';
+      legacy.routes.Dietrich = sanitiseRoute(raw, 'Dietrich');
+      return legacy;
+    }
+    throw new Error('this file is not a Recruitment Planner backup.');
+  }
+
+  function loadSaved() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? sanitiseState(JSON.parse(saved)) : null;
+    } catch {
+      return null; // Storage is blocked or unreadable: start fresh.
+    }
+  }
+
+  let saveWarningShown = false;
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      if (saveWarningShown) return;
+      saveWarningShown = true;
+      toast('This browser blocks saving here. Use Export backup to keep your progress.');
+    }
+  }
+
+  let state = blankState();
+
+  // View state that is not saved.
+  let view = 'all';
+  let query = '';
+  let rankFilter = null;
+  let sortKey = 'urgent';
+  const openPanels = new Set(); // data-keys of <details> the user has opened
+
+  /* ===========================================================================
+     Queries
+     ======================================================================== */
+
+  const route = () => state.routes[state.lord];
+  const roster = () => ROSTERS[state.lord];
+  const findPerson = name => roster().find(p => p.name === name);
+  const currentDay = () => parseDate(route().date);
+
+  const isRecruited = p => route().recruited.includes(p.name);
+  const isFavorite = p => route().favorites.includes(p.name);
+  const isChecked = (p, rank) => route().checked[`${p.name}:${rank}`] === true;
+  const supportDone = p => isChecked(p, p.support);
+  const renownMet = p => route().renown !== null && route().renown >= p.renown;
+  const chapterMet = p => route().chapter === null || route().chapter >= p.minChapter;
+  const sectionOf = p => (!supportDone(p) ? 'working' : renownMet(p) && chapterMet(p) ? 'ready' : 'locked');
+
+  // Items, requests and paralogues are tracked; gold and conversations happen at recruitment.
+  const isTask = req => req.type === 'request' || req.type === 'paralogue';
+  const isTracked = req => req.type === 'item' || isTask(req);
+  const progressOf = req => Math.min(req.qty, (req.type === 'item' ? route().have[req.name] : route().taskProgress[req.id]) ?? 0);
+  const isDone = req => progressOf(req) >= req.qty;
+  const trackedOf = p => p.requirements.filter(isTracked);
+
+  /* ===========================================================================
+     Dates and deadlines
+     ======================================================================== */
+
+  // "9/17 only", "9/2–9/8", "10/16–10/22, clear by 11/1"
+  function windowLabel(req) {
+    const { windows, clearBy } = req;
+    const oneDay = windows.length === 1 && windows[0].start === windows[0].end;
+    const pickup = oneDay ? `${formatDate(windows[0].start)} only` : rangeText(windows);
+    return clearBy > windows.at(-1).end ? `${pickup}, clear by ${formatDate(clearBy)}` : pickup;
+  }
+
+  const paralogueHint = req => [`Accept it from ${req.where}`, req.prerequisite, req.note].filter(Boolean).join(' ');
+
+  // Paralogue windows, cutoffs, story gates and first appearances for one character.
+  function datedFacts(p) {
+    const facts = p.requirements
+      .filter(req => req.type === 'paralogue')
+      .map(req => ({ kind: 'paralogue', req, date: req.windows[0].start, title: `Paralogue: accept ${windowLabel(req)}` }));
+    if (p.cutoff) facts.push({ kind: 'cutoff', date: p.cutoff, title: `Recruit before ${formatDate(p.cutoff)}` });
+    if (p.gateDate) facts.push({ kind: 'gate', date: p.gateDate, title: `Recruitable from ${formatDate(p.gateDate)}` });
+    else if (p.gate) facts.push({ kind: 'gate', date: null, title: `Story gate · Chapter ${p.gate.chapter}` });
+    if (p.appears) facts.push({ kind: 'appears', date: p.appears.start, title: `Appears around ${rangeText([p.appears])}` });
+    return facts;
+  }
+
+  // How a fact relates to the optional in-game date. Null when no date is entered.
+  function factStatus(fact, today) {
+    if (fact.kind === 'paralogue' && isDone(fact.req)) return { tone: 'done', text: '✓ cleared' };
+    if (today === null || fact.date === null) return null;
+    if (fact.kind === 'paralogue') {
+      const { windows, clearBy } = fact.req;
+      const open = windows.find(w => today >= w.start && today <= w.end);
+      if (open) {
+        const left = open.end - today + 1;
+        return { tone: left <= 3 ? 'urgent' : 'deadline', text: left === 1 ? 'open · last day' : `open · ${left} days left` };
+      }
+      const next = windows.find(w => today < w.start);
+      if (next) return { tone: 'deadline', text: `opens in ${plural(next.start - today, 'day')}` };
+      if (today <= clearBy) return { tone: 'urgent', text: `accepted? clear it by ${formatDate(clearBy)}` };
+      return { tone: 'urgent', text: 'window passed (tick it off if you cleared it)' };
+    }
+    if (fact.kind === 'cutoff') {
+      const left = fact.date - today;
+      if (left <= 0) return { tone: 'urgent', text: 'passed' };
+      return { tone: left <= 7 ? 'urgent' : 'deadline', text: left === 1 ? 'last day' : `${left} days left` };
+    }
+    if (today < fact.date) return { tone: 'info', text: `in ${plural(fact.date - today, 'day')}` };
+    return { tone: 'past', text: fact.kind === 'gate' ? 'date reached' : 'should be around now' };
+  }
+
+  const BASE_TONES = { paralogue: 'deadline', cutoff: 'deadline', gate: 'info', appears: 'info' };
+
+  function badgeFor(fact, today) {
+    const status = factStatus(fact, today);
+    const oneDay = fact.kind === 'paralogue' && fact.req.windows.length === 1 && fact.req.windows[0].start === fact.req.windows[0].end;
+    return {
+      tone: status?.tone ?? (oneDay ? 'urgent' : BASE_TONES[fact.kind]),
+      text: status ? `${fact.title} · ${status.text}` : fact.title,
+    };
+  }
+
+  // The next day that still matters for this character (used by "Deadlines first").
+  function nextDeadline(p, today) {
+    const days = [];
+    for (const req of p.requirements) {
+      if (req.type !== 'paralogue' || isDone(req)) continue;
+      const lastPickup = req.windows.at(-1).end;
+      days.push(today !== null && today > lastPickup ? req.clearBy : lastPickup);
+    }
+    if (p.cutoff) days.push(p.cutoff - 1);
+    const relevant = today === null ? days : days.filter(day => day >= today);
+    return relevant.length ? Math.min(...relevant) : Infinity;
+  }
+
+  // Dated facts for unrecruited characters, merged so shared ones appear once.
+  function keyDateEvents() {
+    const events = new Map();
+    const add = (id, base, name) => {
+      const event = events.get(id) ?? { ...base, names: [] };
+      event.names.push(name);
+      events.set(id, event);
+    };
+    for (const p of roster().filter(person => !isRecruited(person))) {
+      for (const fact of datedFacts(p)) {
+        if (fact.date === null) continue;
+        if (fact.kind === 'paralogue') {
+          add(fact.req.id, { fact, title: fact.req.label, detail: `Accept ${windowLabel(fact.req)}`, listNames: true }, p.name);
+        } else if (fact.kind === 'cutoff') {
+          add(`cutoff:${fact.date}`, { fact, title: fact.title, detail: 'Not recruitable after this', listNames: true }, p.name);
+        } else if (fact.kind === 'gate') {
+          add(`gate:${p.name}`, { fact, title: `${p.name} becomes recruitable`, detail: `Story gate, around Chapter ${p.gate.chapter}` }, p.name);
+        } else {
+          add(`appears:${p.name}`, { fact, title: `${p.name} starts appearing in Dagsion`, detail: `Around ${rangeText([p.appears])}` }, p.name);
+        }
+      }
+    }
+    return [...events.values()].sort((a, b) => a.fact.date - b.fact.date);
+  }
+
+  /* ===========================================================================
+     Rendering
+     ======================================================================== */
+
+  const openAttr = key => (openPanels.has(key) ? html` open` : '');
+
+  // Click-to-reveal text. "Show all spoilers" renders it as plain text instead.
+  function spoiler(text, key) {
+    if (!text) return '';
+    if (state.settings.revealSpoilers) return html`<span class="spoiler-text">${text}</span>`;
+    return html`<details class="spoiler" data-key="${key}"${openAttr(key)}><summary>Spoiler</summary><span class="spoiler-text">${text}</span></details>`;
+  }
+
+  // Leave a field alone while someone is typing in it.
+  function syncField(input, value, force = false) {
+    if (!force && document.activeElement === input) return;
+    input.value = value ?? '';
+    input.removeAttribute('aria-invalid');
+  }
+
+  function renderControls() {
+    const current = route();
+    const rankOf = button => (button.dataset.filterRank === 'all' ? null : Number(button.dataset.filterRank));
+    document.querySelectorAll('[data-lord]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lord === state.lord)));
+    document.querySelectorAll('[data-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    document.querySelectorAll('[data-filter-rank]').forEach(b => b.setAttribute('aria-pressed', String(rankOf(b) === rankFilter)));
+    document.querySelectorAll('[data-date-step]').forEach(b => { b.disabled = current.date === null; });
+    syncField($('renownInput'), current.renown);
+    syncField($('chapterInput'), current.chapter);
+    syncField($('dateInput'), current.date);
+    $('favoriteCount').textContent = current.favorites.length;
+    $('spoilerToggle').checked = state.settings.revealSpoilers;
+    const note = ROUTE_NOTES[state.lord];
+    $('routeNote').textContent = `${roster().length} recruitable characters on ${state.lord}'s path.${note ? ` ${note}` : ''}`;
+  }
+
+  function renderStats() {
+    const open = roster().filter(p => !isRecruited(p));
+    const count = section => open.filter(p => sectionOf(p) === section).length;
+    $('readyStat').textContent = count('ready');
+    $('workingStat').textContent = count('working');
+    $('lockedStat').textContent = count('locked');
+    $('recruitedStat').textContent = route().recruited.length;
+  }
+
+  function renderKeyDates() {
+    const today = currentDay();
+    const events = keyDateEvents();
+    $('datesCount').textContent = plural(events.length, 'date');
+    const rows = events.map(event => {
+      const status = factStatus(event.fact, today);
+      const names = event.listNames ? ` · for ${event.names.join(', ')}` : '';
+      return html`
+        <li>
+          <span class="timeline-date">${formatDate(event.fact.date)}</span>
+          <div><strong>${event.title}</strong><small>${event.detail}${names}</small></div>
+          ${status ? html`<span class="badge badge--${status.tone}">${status.text}</span>` : ''}
+        </li>`;
+    });
+    if (today !== null) {
+      const index = events.findIndex(event => event.fact.date >= today);
+      const marker = html`<li class="today-row"><span class="timeline-date">${formatDate(today)}</span><div><strong>Today</strong></div></li>`;
+      rows.splice(index === -1 ? rows.length : index, 0, marker);
+    }
+    $('datesContent').innerHTML = events.length
+      ? html`<ol class="timeline">${rows}</ol>`
+      : html`<p class="shop-empty">No dates left to watch for the characters you still need.</p>`;
+  }
+
+  function shoppingScope() {
+    const open = roster().filter(p => !isRecruited(p));
+    const favoritesOnly = route().favorites.length > 0;
+    return { favoritesOnly, people: favoritesOnly ? open.filter(isFavorite) : open };
+  }
+
+  function itemRow(entry) {
+    const have = route().have[entry.name] ?? 0;
+    return html`
+      <div class="shopping-row">
+        <div class="row-head"><span>${entry.name}</span><span>${have >= entry.qty ? '✓ Enough' : `${formatNumber(entry.qty - have)} to go`}</span></div>
+        <span class="row-sub">Need ${entry.qty} · ${entry.people.join(', ')}</span>
+        <label class="have-label">Have
+          <input class="have" type="number" min="0" max="9999" step="1" inputmode="numeric" value="${have}"
+            data-have="${entry.name}" data-key="have:${entry.name}" aria-label="${entry.name} you have">
+        </label>
+        ${spoiler(ITEM_HINTS[entry.name], `shop:${entry.name}`)}
+      </div>`;
+  }
+
+  function taskRow({ req, people }) {
+    const done = progressOf(req);
+    const control = req.qty === 1
+      ? html`<label class="task-check"><input type="checkbox" data-task-check="${req.id}" data-key="task:${req.id}"
+          aria-label="${req.label} done"${done ? html` checked` : ''}> Done</label>`
+      : html`<div class="stepper">
+          <button type="button" data-task="${req.id}" data-step="-1" data-key="task:${req.id}:-1" aria-label="One less of ${req.label} done">−</button>
+          <span>${done}/${req.qty}</span>
+          <button type="button" data-task="${req.id}" data-step="1" data-key="task:${req.id}:+1" aria-label="One more of ${req.label} done">+</button>
+        </div>`;
+    const detail = req.type === 'paralogue'
+      ? `Accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''} · for ${people.join(', ')}`
+      : `For ${people.join(', ')}`;
+    return html`
+      <div class="shopping-row">
+        <div class="row-head"><span>${req.label}</span>${control}</div>
+        <span class="row-sub">${detail}</span>
+        ${spoiler(req.type === 'paralogue' ? paralogueHint(req) : req.hint, `shop:${req.id}`)}
+      </div>`;
+  }
+
+  function renderShopping() {
+    const { people, favoritesOnly } = shoppingScope();
+    $('shoppingScope').textContent = favoritesOnly ? `★ ${plural(people.length, 'favorite')}` : `All ${people.length} unrecruited`;
+    $('shopIntro').textContent = favoritesOnly
+      ? 'Only your starred characters are counted. Unstar everyone to count the whole path.'
+      : "Everyone you haven't recruited on this path is counted. Star characters to narrow it down.";
+
+    const payments = [];
+    const items = new Map();
+    const tasks = new Map();
+    for (const p of people) {
+      for (const req of p.requirements) {
+        if (req.type === 'gold') payments.push(`${p.name}: ${formatNumber(req.amount)} G`);
+        if (req.type === 'item') {
+          const entry = items.get(req.name) ?? { name: req.name, qty: 0, people: [] };
+          entry.qty += req.qty;
+          entry.people.push(`${p.name} ×${req.qty}`);
+          items.set(req.name, entry);
+        }
+        if (isTask(req)) {
+          const entry = tasks.get(req.id) ?? { req, people: [] };
+          entry.people.push(p.name);
+          tasks.set(req.id, entry);
+        }
+      }
+    }
+    const goldTotal = people.flatMap(p => p.requirements).filter(r => r.type === 'gold').reduce((sum, r) => sum + r.amount, 0);
+    const itemList = [...items.values()].sort((a, b) => a.name.localeCompare(b.name));
+    const itemsLeft = itemList.reduce((sum, entry) => sum + Math.max(0, entry.qty - (route().have[entry.name] ?? 0)), 0);
+    const taskList = [...tasks.values()];
+    const paralogues = taskList.filter(t => t.req.type === 'paralogue').sort((a, b) => a.req.windows[0].start - b.req.windows[0].start);
+    const requests = taskList.filter(t => t.req.type === 'request').sort((a, b) => a.req.label.localeCompare(b.req.label));
+    const sum = (list, fn) => list.reduce((total, entry) => total + fn(entry.req), 0);
+
+    $('shoppingContent').innerHTML = html`
+      <div class="total"><span>Gold to budget</span><strong>${formatNumber(goldTotal)} G</strong></div>
+      ${payments.length ? html`<p class="sheet-info">${payments.join(' · ')}</p>` : ''}
+      <div class="shopping-grid">
+        <div class="shopping-col">
+          <h3>Items · ${formatNumber(itemsLeft)} still to gather</h3>
+          ${itemList.length ? itemList.map(itemRow) : html`<p class="shop-empty">No items needed.</p>`}
+        </div>
+        <div class="shopping-col">
+          <h3>Paralogues · ${paralogues.filter(t => isDone(t.req)).length}/${paralogues.length} cleared</h3>
+          ${paralogues.length ? paralogues.map(taskRow) : html`<p class="shop-empty">No paralogues needed.</p>`}
+          <h3>Requests · ${sum(requests, progressOf)}/${sum(requests, req => req.qty)} done</h3>
+          <span class="row-sub">Short errands: usually a quick battle, a search or a visit to another town.</span>
+          ${requests.length ? requests.map(taskRow) : html`<p class="shop-empty">No requests needed.</p>`}
+        </div>
+      </div>`;
+  }
+
+  function requirementLine(req, p) {
+    const key = `hint:${p.name}:${req.type}`;
+    const doneClass = isTracked(req) && isDone(req) ? 'done' : '';
+    switch (req.type) {
+      case 'item':
+        return html`<li class="${doneClass}">Give ${req.qty} × ${req.name} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(ITEM_HINTS[req.name], key)}</li>`;
+      case 'request':
+        return html`<li class="${doneClass}">Complete ${req.label} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(req.hint, key)}</li>`;
+      case 'paralogue':
+        return html`<li class="${doneClass}">Clear ${req.label}: accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''}${spoiler(paralogueHint(req), key)}</li>`;
+      case 'gold':
+        return html`<li class="later">At recruitment: pay ${formatNumber(req.amount)} G${spoiler(req.hint, key)}</li>`;
+      default:
+        return html`<li class="later">At recruitment: ${req.text}${spoiler(req.answer, key)}</li>`;
+    }
+  }
+
+  function conditions(p) {
+    const lines = p.requirements.map(req => requirementLine(req, p));
+    if (p.tutorial) lines.push(html`<li class="later">Joins through this path's recruitment tutorial.</li>`);
+    if (!lines.length) lines.push(html`<li class="later">No gifts, gold or tasks needed.</li>`);
+    const gate = p.gate && (p.gate.date ? `${p.gate.date} (around Chapter ${p.gate.chapter})` : `around Chapter ${p.gate.chapter}`);
+    return html`
+      <p>Support ${p.support} · Renown ${p.renown} · Chapter ${p.minChapter}+</p>
+      ${gate ? html`<p>Story gate: recruitable from ${gate}.</p>` : ''}
+      ${p.laterChapter ? html`<p>Guides differ on the chapter: Serenes Forest lists ${p.chapter}, LUM lists ${p.laterChapter}. The earlier one is used.</p>` : ''}
+      <ul class="reqs">${lines}</ul>
+      ${trackedOf(p).length ? html`<p class="hint-note">Tick tasks off under “Shopping list &amp; tasks”.</p>` : ''}`;
+  }
+
+  function statusLine(p, section) {
+    if (section === 'ready') {
+      const left = trackedOf(p).filter(req => !isDone(req)).length;
+      return left ? { tone: 'wait', text: `Thresholds met · ${plural(left, 'task')} left` } : { tone: 'good', text: '✓ Ready to recruit' };
+    }
+    if (section === 'working') {
+      const ranks = ranksFor(p);
+      return { tone: '', text: `${ranks.filter(rank => isChecked(p, rank)).length}/${ranks.length} Support ranks` };
+    }
+    if (route().renown === null) return { tone: 'wait', text: 'Enter your Renown' };
+    return { tone: 'wait', text: renownMet(p) ? `Needs Chapter ${p.minChapter}` : `Needs Renown ${p.renown}` };
+  }
+
+  function card(p, section, today) {
+    const badges = datedFacts(p).map(fact => badgeFor(fact, today));
+    if (p.tutorial) badges.push({ tone: 'info', text: 'Recruitment tutorial' });
+    const tracked = trackedOf(p);
+    const goldNeeded = p.requirements.filter(req => req.type === 'gold').reduce((sum, req) => sum + req.amount, 0);
+    const favorite = isFavorite(p);
+    const status = statusLine(p, section);
+    const detailsKey = `details:${p.name}`;
+    return html`
+      <article class="person r${p.renown}${badges.some(b => b.tone === 'urgent') ? ' urgent' : ''}">
+        <div class="person-head">
+          <div class="name-line">
+            <button type="button" class="star" data-favorite="${p.name}" data-key="favorite:${p.name}"
+              aria-pressed="${favorite}" aria-label="Favorite ${p.name}">${favorite ? '★' : '☆'}</button>
+            <h3>${p.name}</h3>
+          </div>
+          <span class="rank">Renown ${p.renown}</span>
+        </div>
+        <div class="chips">
+          ${ranksFor(p).map(rank => html`
+            <label class="chip${isChecked(p, rank) ? ' done' : ''}">
+              <input type="checkbox" data-support="${p.name}" data-level="${rank}" data-key="support:${p.name}:${rank}"${isChecked(p, rank) ? html` checked` : ''}>
+              Support ${rank}
+            </label>`)}
+          <span class="mini">Ch. ${p.minChapter}+</span>
+          ${tracked.length ? html`<span class="mini">Tasks ${tracked.filter(isDone).length}/${tracked.length}</span>` : ''}
+          ${goldNeeded ? html`<span class="mini">Costs ${formatNumber(goldNeeded)} G</span>` : ''}
+        </div>
+        ${badges.length ? html`<div class="badges">${badges.map(b => html`<span class="badge badge--${b.tone}">${b.text}</span>`)}</div>` : ''}
+        <details class="conditions" data-key="${detailsKey}"${openAttr(detailsKey)}>
+          <summary>Requirements &amp; hints</summary>
+          ${conditions(p)}
+        </details>
+        <div class="card-foot">
+          <span class="status ${status.tone}">${status.text}</span>
+          <button type="button" class="mark" data-recruit="${p.name}" data-key="recruit:${p.name}">✓ Mark recruited</button>
+        </div>
+      </article>`;
+  }
+
+  const SORTS = {
+    urgent: (a, b, today) => nextDeadline(a, today) - nextDeadline(b, today) || a.renown - b.renown,
+    'support-asc': (a, b) => a.support - b.support || a.renown - b.renown,
+    'support-desc': (a, b) => b.support - a.support || a.renown - b.renown,
+    'renown-asc': (a, b) => a.renown - b.renown,
+    'renown-desc': (a, b) => b.renown - a.renown,
+    'name-asc': () => 0,
+    'name-desc': (a, b) => b.name.localeCompare(a.name),
+  };
+
+  function emptyMessage(section, open, inView, visible) {
+    if (!open.length) return 'Everyone on this path is recruited. Well done!';
+    if (view === 'favorites' && !route().favorites.length) return 'No favorites yet. Tap ☆ on a card to pin someone here.';
+    if (!inView.length) return 'All your favorites are recruited.';
+    if (!visible.length) return 'Nobody matches your search or Renown filter.';
+    if (section === 'ready' && route().renown === null) return 'Enter your Renown above to see who meets their thresholds.';
+    if (section === 'working') return 'No Support left to build in this view.';
+    return 'Nobody here right now.';
+  }
+
+  function renderCards() {
+    const today = currentDay();
+    const open = roster().filter(p => !isRecruited(p));
+    const inView = view === 'favorites' ? open.filter(isFavorite) : open;
+    const visible = inView.filter(p => p.name.toLowerCase().includes(query) && (rankFilter === null || p.renown === rankFilter));
+    const compare = (a, b) => SORTS[sortKey](a, b, today) || a.name.localeCompare(b.name);
+    for (const section of ['ready', 'working', 'locked']) {
+      const people = visible.filter(p => sectionOf(p) === section).sort(compare);
+      $(`${section}Count`).textContent = people.length;
+      $(`${section}List`).innerHTML = people.length
+        ? html`${people.map(p => card(p, section, today))}`
+        : html`<p class="empty">${emptyMessage(section, open, inView, visible)}</p>`;
+    }
+  }
+
+  function renderRecruited() {
+    const recruited = [...route().recruited].sort();
+    $('recruitedCount').textContent = `${recruited.length} recruited`;
+    $('recruitedList').innerHTML = recruited.length
+      ? html`${recruited.map(name => html`
+          <span class="manage-chip">${name}
+            <button type="button" data-unrecruit="${name}" data-key="unrecruit:${name}" aria-label="Put ${name} back on the list">Put back</button>
+          </span>`)}`
+      : html`<span class="sheet-info">Nobody marked as recruited yet.</span>`;
+    $('autoJoin').innerHTML = html`Characters who join ${state.lord} automatically aren't listed.
+      ${spoiler(AUTO_JOIN[state.lord].join(', '), `auto:${state.lord}`)}`;
+  }
+
+  // Re-renders everything, keeping keyboard focus on the same control.
+  function render() {
+    const focusKey = document.activeElement?.closest('[data-key]')?.dataset.key;
+    renderControls();
+    renderStats();
+    renderKeyDates();
+    renderShopping();
+    renderCards();
+    renderRecruited();
+    if (!focusKey) return;
+    const target = document.querySelector(`[data-key="${CSS.escape(focusKey)}"]`);
+    (target?.matches('details') ? target.querySelector('summary') : target)?.focus();
+  }
+
+  function commit() {
+    save();
+    render();
+  }
+
+  let toastTimer = 0;
+  function toast(message, undo) {
+    const box = document.createElement('div');
+    box.className = 'toast';
+    box.textContent = message;
+    if (undo) {
+      const button = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Undo' });
+      button.addEventListener('click', () => {
+        undo();
+        toast('Undone.');
+      });
+      box.append(button);
+    }
+    $('toast').replaceChildren(box);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $('toast').replaceChildren(), undo ? 8000 : 4000);
+  }
+
+  /* ===========================================================================
+     Actions
+     ======================================================================== */
+
+  function resetView() {
+    view = 'all';
+    query = '';
+    rankFilter = null;
+    $('searchInput').value = '';
+  }
+
+  function selectLord(lord) {
+    if (!LORDS.includes(lord)) return;
+    state.lord = lord;
+    resetView();
+    commit();
+  }
+
+  function setView(value) {
+    view = value === 'favorites' ? 'favorites' : 'all';
+    render();
+  }
+
+  function setRankFilter(value) {
+    const rank = value === 'all' ? null : Number(value);
+    rankFilter = rank === rankFilter ? null : rank;
+    render();
+  }
+
+  function toggleFavorite(name) {
+    if (!findPerson(name)) return;
+    const favorites = route().favorites;
+    route().favorites = favorites.includes(name) ? favorites.filter(n => n !== name) : [...favorites, name];
+    commit();
+  }
+
+  function setSupport(name, level, ticked) {
+    const p = findPerson(name);
+    if (!p || !ranksFor(p).includes(level)) return;
+    for (const rank of ranksFor(p)) {
+      const key = `${name}:${rank}`;
+      if (ticked && rank <= level) route().checked[key] = true; // reaching a rank implies the lower ones
+      if (!ticked && rank >= level) delete route().checked[key]; // unticking a rank clears the higher ones
+    }
+    commit();
+  }
+
+  function markRecruited(name) {
+    const lord = state.lord;
+    if (!findPerson(name) || route().recruited.includes(name)) return;
+    route().recruited.push(name);
+    commit();
+    toast(`${name} marked as recruited.`, () => {
+      state.routes[lord].recruited = state.routes[lord].recruited.filter(n => n !== name);
+      commit();
+    });
+  }
+
+  function unrecruit(name) {
+    route().recruited = route().recruited.filter(n => n !== name);
+    commit();
+    toast(`${name} is back on the list.`);
+  }
+
+  function setTask(id, value) {
+    const req = roster().flatMap(p => p.requirements).find(r => r.id === id);
+    if (!req) return;
+    const done = Math.max(0, Math.min(req.qty, value));
+    if (done) route().taskProgress[id] = done;
+    else delete route().taskProgress[id];
+    commit();
+  }
+
+  function setHave(name, input) {
+    const have = intInRange(input.value, 0, 9999);
+    if (have === null) {
+      input.value = route().have[name] ?? 0;
+      return;
+    }
+    if (have) route().have[name] = have;
+    else delete route().have[name];
+    commit();
+  }
+
+  function stepDate(step) {
+    const today = currentDay();
+    if (today === null) return;
+    route().date = formatDate(Math.min(365, Math.max(1, today + step)));
+    commit();
+  }
+
+  /* ===========================================================================
+     Events
+     ======================================================================== */
+
+  const CLICK_ACTIONS = {
+    lord: selectLord,
+    view: setView,
+    filterRank: setRankFilter,
+    favorite: toggleFavorite,
+    recruit: markRecruited,
+    unrecruit,
+    task: (id, button) => setTask(id, (route().taskProgress[id] ?? 0) + Number(button.dataset.step)),
+    dateStep: step => stepDate(Number(step)),
+  };
+
+  document.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    const action = Object.keys(CLICK_ACTIONS).find(name => name in button.dataset);
+    if (action) CLICK_ACTIONS[action](button.dataset[action], button);
+  });
+
+  document.addEventListener('change', event => {
+    const { dataset, checked } = event.target;
+    if (dataset.support) setSupport(dataset.support, Number(dataset.level), checked);
+    else if (dataset.have) setHave(dataset.have, event.target);
+    else if (dataset.taskCheck) setTask(dataset.taskCheck, checked ? 1 : 0);
+  });
+
+  // Remember which panels are open so re-rendering doesn't close them.
+  document.addEventListener('toggle', event => {
+    const key = event.target.dataset?.key;
+    if (!key) return;
+    if (event.target.open) openPanels.add(key);
+    else openPanels.delete(key);
+  }, true);
+
+  // Typed values only count when valid; leaving the field shows the saved value again.
+  function bindField(input, field, parse) {
+    input.addEventListener('input', () => {
+      const text = input.value.trim();
+      const value = text === '' ? null : parse(text);
+      if (input.validity.badInput || (text !== '' && value === null)) {
+        input.setAttribute('aria-invalid', 'true');
+        return;
+      }
+      input.removeAttribute('aria-invalid');
+      route()[field] = value;
+      commit();
+    });
+    input.addEventListener('blur', () => syncField(input, route()[field], true));
+  }
+
+  bindField($('renownInput'), 'renown', text => intInRange(text, 0, 10));
+  bindField($('chapterInput'), 'chapter', text => intInRange(text, 1, 20));
+  bindField($('dateInput'), 'date', text => {
+    const day = parseDate(text);
+    return day === null ? null : formatDate(day);
+  });
+
+  $('searchInput').addEventListener('input', event => {
+    query = event.target.value.trim().toLowerCase();
+    renderCards();
+  });
+
+  $('sortSelect').addEventListener('change', event => {
+    sortKey = event.target.value in SORTS ? event.target.value : 'urgent';
+    renderCards();
+  });
+
+  $('spoilerToggle').addEventListener('change', event => {
+    state.settings.revealSpoilers = event.target.checked;
+    commit();
+  });
+
+  $('exportBtn').addEventListener('click', () => {
+    const backup = JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2);
+    const url = URL.createObjectURL(new Blob([backup], { type: 'application/json' }));
+    const link = Object.assign(document.createElement('a'), {
+      href: url,
+      download: `fortunes-weave-planner-backup-${new Date().toISOString().slice(0, 10)}.json`,
+    });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('Backup saved (all four paths).');
+  });
+
+  $('importBtn').addEventListener('click', () => $('importFile').click());
+
+  $('importFile').addEventListener('change', async event => {
+    const file = event.target.files?.[0];
+    event.target.value = ''; // lets the same file be picked again
+    if (!file) return;
+    try {
+      const imported = sanitiseState(JSON.parse(await file.text()));
+      if (!confirm('Replace your progress on all four paths with this backup?')) return;
+      state = imported;
+      resetView();
+      commit();
+      toast(`Imported ${file.name}.`);
+    } catch (error) {
+      toast(`Import failed: ${error instanceof SyntaxError ? 'this file is not valid JSON.' : error.message}`);
+    }
+  });
+
+  $('resetBtn').addEventListener('click', () => {
+    if (!confirm('Start fresh on all four paths? This clears Support ticks, favorites, recruited marks, Renown, chapter, date and shopping progress. Export a backup first if you might want it back.')) return;
+    state = { ...blankState(), lord: state.lord, settings: state.settings };
+    resetView();
+    commit();
+    toast('Started fresh.');
+  });
+
+  // Keep several open tabs in sync.
+  window.addEventListener('storage', event => {
+    if (event.key !== STORAGE_KEY || !event.newValue) return;
+    try {
+      state = sanitiseState(JSON.parse(event.newValue));
+      render();
+    } catch {
+      // Ignore data another tab wrote that this version can't read.
+    }
+  });
+
+  /* ===========================================================================
+     Start
+     ======================================================================== */
+
+  checkData();
+  const saved = loadSaved();
+  if (saved) state = saved;
+  $('howTo').open = !saved;
+  render();
+})();
+</script>
+</body>
+</html>
