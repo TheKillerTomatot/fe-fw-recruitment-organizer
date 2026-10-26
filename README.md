@@ -6,11 +6,12 @@ It's a single HTML file. There's nothing to install, no account to create, and i
 
 ## How to use
 
-1. Download `fortune_weave_part1_recruitment_tracker.html`.
-2. Open it in any modern browser (Chrome, Edge, Firefox or Safari) by double-clicking it.
-3. Pick your lord and enter your Renown. The **How to use** panel at the top of the page explains the rest.
+- **Online:** open **https://thekillertomatot.github.io/fe-fw-recruitment-organizer/**. There's nothing to install.
+- **Offline:** download the HTML file from the **[latest release](https://github.com/TheKillerTomatot/fe-fw-recruitment-organizer/releases/latest)** and open it in any modern browser (Chrome, Edge, Firefox or Safari) by double-clicking it. Each release lists the file's hash and its VirusTotal report.
 
-Your progress is saved in your browser on your own device. Use **Export backup** to move it to another device or browser.
+Then pick your lord and enter your Renown. The **How to use** panel at the top of the page explains the rest.
+
+Your progress is saved in your browser on your own device. The online version and a downloaded copy keep separate progress. Use **Export backup** and **Import backup** to move it between them, or to another device or browser.
 
 ## Features
 
@@ -32,9 +33,11 @@ Anyone can check that this tool is genuine and does nothing behind your back:
 
 Get the hash of your downloaded copy with:
 
-- **Windows (PowerShell):** `Get-FileHash -Algorithm SHA256 fortune_weave_part1_recruitment_tracker.html`
-- **macOS:** `shasum -a 256 fortune_weave_part1_recruitment_tracker.html`
-- **Linux:** `sha256sum fortune_weave_part1_recruitment_tracker.html`
+- **Windows (PowerShell):** `Get-FileHash -Algorithm SHA256 fortune-weave-recruitment-planner-v6.2.html`
+- **macOS:** `shasum -a 256 fortune-weave-recruitment-planner-v6.2.html`
+- **Linux:** `sha256sum fortune-weave-recruitment-planner-v6.2.html`
+
+If you downloaded `index.html` from the repository instead, use that name. It's the same file with the same hash.
 
 If the hash doesn't match, your file differs from the published one. Don't use it.
 

@@ -30,7 +30,9 @@ By contributing, you agree that your contribution is licensed under [CC BY-NC-SA
 
 ## Releasing a new version (maintainer)
 
-1. Bump the version in the HTML file's header comment and in the badge on the page.
-2. Compute the new SHA-256 hash (`Get-FileHash -Algorithm SHA256 fortune_weave_part1_recruitment_tracker.html` in PowerShell).
-3. Update the hash, the version and the VirusTotal link in `README.md`.
-4. Upload the file to [VirusTotal](https://www.virustotal.com) and create a GitHub Release with the file attached.
+1. Bump the version in `index.html`: in its header comment and in the badge on the page.
+2. Compute the new SHA-256 hash (`Get-FileHash -Algorithm SHA256 index.html` in PowerShell).
+3. Update the hash, the version, the VirusTotal link and the file name in the hash commands in `README.md`.
+4. Make a copy of `index.html` named `fortune-weave-recruitment-planner-vX.Y.html`, outside the repository. It has the same contents, so it has the same hash.
+5. Upload that copy to [VirusTotal](https://www.virustotal.com).
+6. Commit and push, then create a GitHub Release tagged `vX.Y`. Attach the renamed copy, and put the hash and the VirusTotal link in the release notes.
