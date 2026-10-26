@@ -50,6 +50,9 @@
       --lilac: #d8b9f4;
       --focus: #b0d6ff;
       --link: #e2c4ff;
+      --kind-item: #6cb6ff;
+      --kind-request: #f4a259;
+      --kind-paralogue: #ee7fb5;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background: var(--bg);
@@ -176,7 +179,7 @@
     .conditions p { margin: 8px 0 0; line-height: 1.58; color: var(--text-soft); }
     .reqs { margin: 8px 0 0; padding: 0; list-style: none; }
     .reqs li { position: relative; padding: 4px 0 4px 20px; line-height: 1.5; color: var(--text-soft); }
-    .reqs li::before { content: '○'; position: absolute; left: 2px; color: #8c9ab0; }
+    .reqs li::before { content: '○'; position: absolute; left: 2px; color: var(--kind, #8c9ab0); }
     .reqs li.done { color: #b7f6df; }
     .reqs li.done::before { content: '✓'; color: var(--mint); }
     .reqs li.later::before { content: '•'; }
@@ -225,7 +228,7 @@
     .shopping-col { padding: 14px; border: 1px solid #3b4960; border-radius: 12px; background: var(--panel-inset); }
     .shopping-col h3 { margin: 0 0 6px; font-size: 1rem; }
     .shopping-col h3:not(:first-child) { margin-top: 18px; }
-    .shopping-row { padding: 10px 0; border-bottom: 1px solid var(--border-soft); }
+    .shopping-row { padding: 10px 0 10px 12px; border-bottom: 1px solid var(--border-soft); box-shadow: inset 3px 0 0 var(--kind); }
     .shopping-row:last-child { border-bottom: 0; }
     .row-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .84rem; font-weight: 700; }
     .row-sub { display: block; margin-top: 4px; font-size: .74rem; line-height: 1.45; color: #aab7c8; }
@@ -237,6 +240,12 @@
     .task-check { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; }
     .task-check input { width: 16px; height: 16px; margin: 0; accent-color: #83dabe; }
     .shop-empty { margin: 0; padding: 10px 0; font-size: .85rem; color: #b7c1d1; }
+
+    /* Requirement kinds: one colour each in the shopping list and card details */
+    .kind-item { --kind: var(--kind-item); }
+    .kind-request { --kind: var(--kind-request); }
+    .kind-paralogue { --kind: var(--kind-paralogue); }
+    .kind-heading::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; background: var(--kind); }
 
     /* Recruited, data, footer, toast */
     .manage { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -252,16 +261,23 @@
     .toast { display: flex; align-items: center; gap: 12px; padding: 11px 14px; font-size: .85rem; color: #e9fff7; border: 1px solid #4b9d87; border-radius: 12px; background: #173a35; box-shadow: 0 10px 30px #0008; }
     .toast button { padding: 6px 10px; font-size: .78rem; font-weight: 800; color: var(--accent-ink); border: 0; border-radius: 8px; background: var(--accent); }
 
-    /* Renown colours (cards and filter buttons) */
-    .r2 { --t-border: #4bb69e; --t-fg: #a4efdd; --t-bg: #173d39; }
-    .r3 { --t-border: #5aaced; --t-fg: #b2deff; --t-bg: #1a3850; }
-    .r4 { --t-border: #8295ed; --t-fg: #c8d2ff; --t-bg: #293252; }
-    .r5 { --t-border: #a486f7; --t-fg: #decfff; --t-bg: #352a4c; }
-    .r6 { --t-border: #cb88dc; --t-fg: #f0c5ff; --t-bg: #402849; }
-    .r7 { --t-border: #ef88be; --t-fg: #ffd1e7; --t-bg: #45293e; }
-    .r8 { --t-border: #eba568; --t-fg: #ffdbac; --t-bg: #493226; }
-    .r9 { --t-border: #e4cf6f; --t-fg: #fff0af; --t-bg: #423d25; }
-    .r10 { --t-border: #d78175; --t-fg: #ffc6bf; --t-bg: #492e30; }
+    /* Renown colours (cards and filter buttons): green for easy, through yellow
+       and orange, to red for hard. Each level only sets a hue; the shades below
+       are derived from it. */
+    .r2 { --hue: 150; }
+    .r3 { --hue: 125; }
+    .r4 { --hue: 100; }
+    .r5 { --hue: 78; }
+    .r6 { --hue: 60; }
+    .r7 { --hue: 46; }
+    .r8 { --hue: 32; }
+    .r9 { --hue: 16; }
+    .r10 { --hue: 0; }
+    .r2, .r3, .r4, .r5, .r6, .r7, .r8, .r9, .r10 {
+      --t-border: hsl(var(--hue) 60% 52%);
+      --t-fg: hsl(var(--hue) 85% 80%);
+      --t-bg: hsl(var(--hue) 45% 17%);
+    }
 
     @media (max-width: 920px) {
       .control-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1229,7 +1245,7 @@
   function itemRow(entry) {
     const have = route().have[entry.name] ?? 0;
     return html`
-      <div class="shopping-row">
+      <div class="shopping-row kind-item">
         <div class="row-head"><span>${entry.name}</span><span>${have >= entry.qty ? '✓ Enough' : `${formatNumber(entry.qty - have)} to go`}</span></div>
         <span class="row-sub">Need ${entry.qty} · ${entry.people.join(', ')}</span>
         <label class="have-label">Have
@@ -1254,7 +1270,7 @@
       ? `Accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''} · for ${people.join(', ')}`
       : `For ${people.join(', ')}`;
     return html`
-      <div class="shopping-row">
+      <div class="shopping-row kind-${req.type}">
         <div class="row-head"><span>${req.label}</span>${control}</div>
         <span class="row-sub">${detail}</span>
         ${spoiler(req.type === 'paralogue' ? paralogueHint(req) : req.hint, `shop:${req.id}`)}
@@ -1300,13 +1316,13 @@
       ${payments.length ? html`<p class="sheet-info">${payments.join(' · ')}</p>` : ''}
       <div class="shopping-grid">
         <div class="shopping-col">
-          <h3>Items · ${formatNumber(itemsLeft)} still to gather</h3>
+          <h3 class="kind-heading kind-item">Items ·${formatNumber(itemsLeft)} still to gather</h3>
           ${itemList.length ? itemList.map(itemRow) : html`<p class="shop-empty">No items needed.</p>`}
         </div>
         <div class="shopping-col">
-          <h3>Paralogues · ${paralogues.filter(t => isDone(t.req)).length}/${paralogues.length} cleared</h3>
+          <h3 class="kind-heading kind-paralogue">Paralogues ·${paralogues.filter(t => isDone(t.req)).length}/${paralogues.length} cleared</h3>
           ${paralogues.length ? paralogues.map(taskRow) : html`<p class="shop-empty">No paralogues needed.</p>`}
-          <h3>Requests · ${sum(requests, progressOf)}/${sum(requests, req => req.qty)} done</h3>
+          <h3 class="kind-heading kind-request">Requests ·${sum(requests, progressOf)}/${sum(requests, req => req.qty)} done</h3>
           <span class="row-sub">Short errands: usually a quick battle, a search or a visit to another town.</span>
           ${requests.length ? requests.map(taskRow) : html`<p class="shop-empty">No requests needed.</p>`}
         </div>
@@ -1318,11 +1334,11 @@
     const doneClass = isTracked(req) && isDone(req) ? 'done' : '';
     switch (req.type) {
       case 'item':
-        return html`<li class="${doneClass}">Give ${req.qty} × ${req.name} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(ITEM_HINTS[req.name], key)}</li>`;
+        return html`<li class="kind-item ${doneClass}">Give${req.qty} × ${req.name} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(ITEM_HINTS[req.name], key)}</li>`;
       case 'request':
-        return html`<li class="${doneClass}">Complete ${req.label} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(req.hint, key)}</li>`;
+        return html`<li class="kind-request ${doneClass}">Complete${req.label} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(req.hint, key)}</li>`;
       case 'paralogue':
-        return html`<li class="${doneClass}">Clear ${req.label}: accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''}${spoiler(paralogueHint(req), key)}</li>`;
+        return html`<li class="kind-paralogue ${doneClass}">Clear${req.label}: accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''}${spoiler(paralogueHint(req), key)}</li>`;
       case 'gold':
         return html`<li class="later">At recruitment: pay ${formatNumber(req.amount)} G${spoiler(req.hint, key)}</li>`;
       default:

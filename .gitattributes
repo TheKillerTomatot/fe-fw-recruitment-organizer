@@ -1,0 +1,4 @@
+# Keep LF line endings on every computer, in the repository and in releases.
+# Converting them would change index.html's SHA-256 hash, so the hash in the
+# README would no longer match the file people download.
+* text=auto eol=lf
