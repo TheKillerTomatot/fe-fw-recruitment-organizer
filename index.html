@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Fortune's Weave · Part I Recruitment Planner · v6.2
+  Fortune's Weave · Part I Recruitment Planner · v6.3
 
   An unofficial, non-commercial fan-made tool for Fire Emblem: Fortune's Weave.
   Not affiliated with or endorsed by Nintendo or the game's developers.
@@ -295,7 +295,7 @@
       <h1>Recruitment Planner</h1>
       <p class="lede">Keep the recruitable characters on your Part I path organized: see who you can pick up and what each one still needs. Story details stay hidden; deadlines don't.</p>
     </div>
-    <span class="edition">Unofficial fan tool · v6.2</span>
+    <span class="edition">Unofficial fan tool · v6.3</span>
   </header>
 
   <details class="sheet" id="howTo">
@@ -1444,7 +1444,8 @@
       ${spoiler(AUTO_JOIN[state.lord].join(', '), `auto:${state.lord}`)}`;
   }
 
-  // Re-renders everything, keeping keyboard focus on the same control.
+  // Re-renders everything, keeping keyboard focus on the same control without
+  // scrolling to it (a card may have moved to another section).
   function render() {
     const focusKey = document.activeElement?.closest('[data-key]')?.dataset.key;
     renderControls();
@@ -1455,7 +1456,7 @@
     renderRecruited();
     if (!focusKey) return;
     const target = document.querySelector(`[data-key="${CSS.escape(focusKey)}"]`);
-    (target?.matches('details') ? target.querySelector('summary') : target)?.focus();
+    (target?.matches('details') ? target.querySelector('summary') : target)?.focus({ preventScroll: true });
   }
 
   function commit() {
@@ -1587,18 +1588,32 @@
     dateStep: step => stepDate(Number(step)),
   };
 
+  const CHANGE_ACTIONS = {
+    support: input => setSupport(input.dataset.support, Number(input.dataset.level), input.checked),
+    have: input => setHave(input.dataset.have, input),
+    taskCheck: input => setTask(input.dataset.taskCheck, input.checked ? 1 : 0),
+  };
+
+  // Cards can move to another section when something changes. This keeps the
+  // section you were working in at the same spot on screen instead of jumping.
+  function keepInPlace(element, update) {
+    const anchor = element.closest('section, .sheet');
+    const top = anchor?.getBoundingClientRect().top;
+    update();
+    if (anchor) window.scrollBy(0, anchor.getBoundingClientRect().top - top);
+  }
+
   document.addEventListener('click', event => {
     const button = event.target.closest('button');
     if (!button) return;
     const action = Object.keys(CLICK_ACTIONS).find(name => name in button.dataset);
-    if (action) CLICK_ACTIONS[action](button.dataset[action], button);
+    if (action) keepInPlace(button, () => CLICK_ACTIONS[action](button.dataset[action], button));
   });
 
   document.addEventListener('change', event => {
-    const { dataset, checked } = event.target;
-    if (dataset.support) setSupport(dataset.support, Number(dataset.level), checked);
-    else if (dataset.have) setHave(dataset.have, event.target);
-    else if (dataset.taskCheck) setTask(dataset.taskCheck, checked ? 1 : 0);
+    const input = event.target;
+    const action = Object.keys(CHANGE_ACTIONS).find(name => name in input.dataset);
+    if (action) keepInPlace(input, () => CHANGE_ACTIONS[action](input));
   });
 
   // Remember which panels are open so re-rendering doesn't close them.
