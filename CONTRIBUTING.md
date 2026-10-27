@@ -30,9 +30,14 @@ By contributing, you agree that your contribution is licensed under [CC BY-NC-SA
 
 ## Releasing a new version (maintainer)
 
-1. Bump the version in `index.html`: in its header comment and in the badge on the page.
-2. Compute the new SHA-256 hash (`Get-FileHash -Algorithm SHA256 index.html` in PowerShell).
-3. Update the hash, the version, the VirusTotal link and the file name in the hash commands in `README.md`.
-4. Make a copy of `index.html` named `fortune-weave-recruitment-planner-vX.Y.html`, outside the repository. It has the same contents, so it has the same hash.
-5. Upload that copy to [VirusTotal](https://www.virustotal.com).
-6. Commit and push, then create a GitHub Release tagged `vX.Y`. Attach the renamed copy, and put the hash and the VirusTotal link in the release notes.
+1. On `dev`, bump the version in `index.html`: in its header comment and in the badge on the page.
+2. Check that the file has LF line endings only. In PowerShell, `([IO.File]::ReadAllBytes("index.html")) -contains 13` must print `False`. Then compute the SHA-256 hash with `Get-FileHash -Algorithm SHA256 index.html`.
+3. Update the hash, the version, the VirusTotal link and the file name in the hash commands in `README.md`. Commit on `dev`.
+4. Merge `dev` into `main` and push. GitHub Pages updates from `main`.
+5. Make a copy of `index.html` named `fortune-weave-recruitment-planner-vX.Y.html`, outside the repository. It has the same contents, so it has the same hash.
+6. Upload that copy to [VirusTotal](https://www.virustotal.com).
+7. Create a GitHub Release on `main` tagged `vX.Y`. Attach the renamed copy. Write release notes with:
+   - a changelog (Fixed / Changed / Unchanged);
+   - the online link;
+   - the hash;
+   - the VirusTotal link.
