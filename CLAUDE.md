@@ -30,6 +30,15 @@ Game data tables at the top of the script:
 - `PARALOGUES`, keyed by owner. Each entry has `where`, an optional `prerequisite` / `note`, and `routes`, which maps each path to `[accept ranges "M/D-M/D, …", clear-by date]`.
 - `STORY_GATES`, `CUTOFFS`, `APPEARS`, `REQUEST_HINTS`, `ITEM_HINTS`.
 
+## Behaviour that is intended (don't "fix" it)
+- **Sections** come from `sectionOf()`: "working" until the needed Support rank is ticked, then "ready" once Renown (and chapter, if entered) is met and `dateLock()` is null; otherwise "locked" (the waiting section).
+- **Date lock** (only with an in-game date entered), in `dateLock()`:
+  - A character waits while a paralogue window, first appearance or dated story gate is more than `SOON_DAYS` (7) days away.
+  - Cut-offs, cleared paralogues and undated gates never lock.
+  - A paralogue that is open, opening within 7 days or already past keeps the character in "ready", even if a later date is far away (Fabio).
+  - Paralogues count from their first window. Between Talimun's two windows a card can be in "ready" while its badge counts down to the second window; a quest accepted in the first window can still be cleared.
+- **Favorites** only ever hold characters still to recruit. Recruiting removes the star, the toast's Undo restores it, "Put back" does not, and `sanitiseRoute` drops stars on recruited characters when loading or importing.
+
 ## Don't break saved progress
 - `STORAGE_KEY` stays `'fortunes-weave-recruitment-planner-v5'` and `TOOL_ID` stays `'recruitment-planner'`. Changing either would hide everyone's progress.
 - Saved keys are part of the format: Support ticks `"<Name>:<rank>"`, task progress `"request:<Name>"` and `"paralogue:<Owner>"`, and item counts by item name. Renaming a character, item or paralogue owner needs a migration in `sanitiseRoute`.
@@ -41,6 +50,8 @@ Game data tables at the top of the script:
 - Path counts are Cai 37, Dietrich 40, Theodora 39, Leda 37.
 - Main flow: tick Support, enter Renown, the card moves sections, and the page doesn't jump.
 - **Read the text** of a card's "Requirements & hints" and the shopping-list headings. Missing spaces have slipped in before.
+- Date lock: on Dietrich's path with Renown 10 and Support ticked, Peppe waits at 9/1 ("Paralogue opens 9/17") and is in "ready" at 9/10. On Leda's path, Fabio is in "ready" during his paralogue window and waits after clearing it until 10/28.
+- Favorites: star someone and mark them recruited. The star is gone and the shopping list widens; Undo brings the star back.
 - Check a 375 px width.
 
 ## Releases

@@ -12,7 +12,7 @@ The best way to help is to [open an issue](https://github.com/TheKillerTomatot/f
 - what the planner says and what it should say;
 - where the correct information comes from (a guide link or your own playthrough).
 
-**Bugs:** say what you did, what you expected, what happened instead, and which browser you used.
+**Bugs:** say what you did, what you expected, what happened instead, and which browser you used. Mention the path, Renown, chapter and in-game date you entered, because they decide which section a character is in.
 
 ## Pull requests
 

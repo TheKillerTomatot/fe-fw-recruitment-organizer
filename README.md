@@ -16,9 +16,9 @@ Your progress is saved in your browser on your own device. The online version an
 ## Features
 
 - Separate progress for Cai's, Dietrich's, Theodora's and Leda's paths
-- Cards sort themselves into "ready", "Support in progress" and "waiting on Renown/chapter"
+- Cards sort themselves into "ready", "Support in progress" and "waiting on Renown, chapter or date"
 - A shopping list for items, requests and paralogues, with progress shown on each card
-- An optional in-game date that shows which paralogue windows are open, coming up or closed
+- An optional in-game date that shows which paralogue windows are open, coming up or closed, and keeps characters you can't recruit for a while yet out of the "ready" section
 - Hints and puzzle answers hidden behind spoiler tags until you tap them
 
 ## Verify your copy

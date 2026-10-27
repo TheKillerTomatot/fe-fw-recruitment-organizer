@@ -320,10 +320,10 @@
       <ol class="how-to">
         <li>Pick the lord whose Part I path you're playing. Each path keeps its own progress.</li>
         <li>Enter your Renown. Chapter and in-game date are optional extras.</li>
-        <li>Tick each Support rank as you reach it with a character. A card moves to the top section once its Support and Renown (and chapter, if you entered one) are met.</li>
+        <li>Tick each Support rank as you reach it with a character. A card moves to the top section once its Support and Renown (and chapter, if you entered one) are met. With an in-game date entered, characters whose paralogue, arrival or story date is more than a week away wait in the bottom section until it draws close.</li>
         <li>Track items, requests and paralogues in <strong>Shopping list &amp; tasks</strong>. Each card's requirements show a ✓ for what's done.</li>
-        <li>Star characters (☆) to focus the shopping list and the Favorites view on them.</li>
-        <li>When someone joins, press <strong>Mark recruited</strong>. You can undo it straight away, or later under <strong>Recruited characters</strong>.</li>
+        <li>Star characters (☆) to focus the shopping list and the Favorites view on them. Recruiting someone removes their star.</li>
+        <li>When someone joins, press <strong>Mark recruited</strong>. You can undo it straight away (which also brings back a star), or later under <strong>Recruited characters</strong>.</li>
         <li>Hints and puzzle answers stay hidden until you tap <strong>Spoiler</strong>.</li>
         <li>Progress is saved in this browser. Use <strong>Export backup</strong> to move it to another device.</li>
       </ol>
@@ -358,13 +358,13 @@
         </div>
       </div>
     </div>
-    <p class="note"><span id="routeNote"></span> Leave Chapter empty to ignore chapter requirements. <span id="dateHelp">The date (month/day, e.g. 9/17) only shows how close deadlines are. It never locks anything.</span></p>
+    <p class="note"><span id="routeNote"></span> Leave Chapter empty to ignore chapter requirements. <span id="dateHelp">The date (month/day, e.g. 9/17) shows how close deadlines are, and keeps characters whose date is more than a week away out of the top section. It never hides anyone.</span></p>
   </section>
 
   <section class="stats" aria-label="Progress on this path">
-    <div class="panel stat good"><strong id="readyStat">0</strong><small>Thresholds met</small></div>
+    <div class="panel stat good"><strong id="readyStat">0</strong><small>Ready now</small></div>
     <div class="panel stat"><strong id="workingStat">0</strong><small>Support to build</small></div>
-    <div class="panel stat warm"><strong id="lockedStat">0</strong><small>Waiting on Renown/chapter</small></div>
+    <div class="panel stat warm"><strong id="lockedStat">0</strong><small>Waiting on Renown/chapter/date</small></div>
     <div class="panel stat purple"><strong id="recruitedStat">0</strong><small>Recruited</small></div>
   </section>
 
@@ -444,8 +444,8 @@
   <section class="section locked" aria-labelledby="lockedHeading">
     <div class="sec-head">
       <div>
-        <h2 id="lockedHeading">Support done · waiting on Renown or chapter</h2>
-        <p>These move up once your Renown (and chapter, if entered) is high enough.</p>
+        <h2 id="lockedHeading">Support done · waiting on Renown, chapter or date</h2>
+        <p>These move up once your Renown (and chapter, if entered) is high enough. With an in-game date entered, characters whose paralogue, arrival or story date is more than a week away also wait here.</p>
       </div>
       <span class="count" id="lockedCount">0</span>
     </div>
@@ -990,8 +990,9 @@
         }
       }
     }
-    clean.favorites = knownNames(raw.favorites);
     clean.recruited = knownNames(raw.recruited);
+    // Older saves could keep stars on recruited characters, which narrowed the shopping list.
+    clean.favorites = knownNames(raw.favorites).filter(name => !clean.recruited.includes(name));
     clean.renown = intInRange(raw.renown, 0, 10);
     clean.chapter = intInRange(raw.chapter, 1, 20);
     const day = parseDate(raw.date);
@@ -1064,7 +1065,7 @@
   const supportDone = p => isChecked(p, p.support);
   const renownMet = p => route().renown !== null && route().renown >= p.renown;
   const chapterMet = p => route().chapter === null || route().chapter >= p.minChapter;
-  const sectionOf = p => (!supportDone(p) ? 'working' : renownMet(p) && chapterMet(p) ? 'ready' : 'locked');
+  const sectionOf = p => (!supportDone(p) ? 'working' : renownMet(p) && chapterMet(p) && !dateLock(p) ? 'ready' : 'locked');
 
   // Items, requests and paralogues are tracked; gold and conversations happen at recruitment.
   const isTask = req => req.type === 'request' || req.type === 'paralogue';
@@ -1097,6 +1098,28 @@
     else if (p.gate) facts.push({ kind: 'gate', date: null, title: `Story gate · Chapter ${p.gate.chapter}` });
     if (p.appears) facts.push({ kind: 'appears', date: p.appears.start, title: `Appears around ${rangeText([p.appears])}` });
     return facts;
+  }
+
+  // A date-gated character moves into "Ready" once its date is this many days away.
+  const SOON_DAYS = 7;
+
+  // With an in-game date entered, characters wait outside "Ready" while a paralogue window,
+  // first appearance or story date is more than SOON_DAYS away, so "Ready" only lists people
+  // you can act on soon. Returns the next such date (shown in the card's status) or null.
+  // - Cutoffs never hold anyone back, and neither does a paralogue ticked off as cleared.
+  // - A paralogue that is open, about to open or already past needs action now, so it keeps
+  //   the character in "Ready" even if a later date is still far away (Fabio).
+  // - Paralogues count from their first window: a quest accepted then can still be cleared later.
+  function dateLock(p) {
+    const today = currentDay();
+    if (today === null) return null;
+    const pending = datedFacts(p)
+      .filter(fact => fact.kind !== 'cutoff' && fact.date !== null)
+      .filter(fact => !(fact.kind === 'paralogue' && isDone(fact.req)));
+    if (pending.some(fact => fact.kind === 'paralogue' && fact.date - today <= SOON_DAYS)) return null;
+    return pending
+      .filter(fact => fact.date - today > SOON_DAYS)
+      .reduce((next, fact) => (next && next.date <= fact.date ? next : fact), null);
   }
 
   // How a fact relates to the optional in-game date. Null when no date is entered.
@@ -1375,7 +1398,10 @@
       return { tone: '', text: `${ranks.filter(rank => isChecked(p, rank)).length}/${ranks.length} Support ranks` };
     }
     if (route().renown === null) return { tone: 'wait', text: 'Enter your Renown' };
-    return { tone: 'wait', text: renownMet(p) ? `Needs Chapter ${p.minChapter}` : `Needs Renown ${p.renown}` };
+    if (!renownMet(p)) return { tone: 'wait', text: `Needs Renown ${p.renown}` };
+    if (!chapterMet(p)) return { tone: 'wait', text: `Needs Chapter ${p.minChapter}` };
+    const lock = dateLock(p);
+    return { tone: 'wait', text: lock.kind === 'paralogue' ? `Paralogue opens ${formatDate(lock.date)}` : lock.title };
   }
 
   function card(p, section, today) {
@@ -1391,7 +1417,7 @@
         <div class="person-head">
           <div class="name-line">
             <button type="button" class="star" data-favorite="${p.name}" data-key="favorite:${p.name}"
-              aria-pressed="${favorite}" aria-label="Favorite ${p.name}">${favorite ? '★' : '☆'}</button>
+              aria-pressed="${String(favorite)}" aria-label="Favorite ${p.name}">${favorite ? '★' : '☆'}</button>
             <h3>${p.name}</h3>
           </div>
           <span class="rank">Renown ${p.renown}</span>
@@ -1428,10 +1454,9 @@
     'name-desc': (a, b) => b.name.localeCompare(a.name),
   };
 
-  function emptyMessage(section, open, inView, visible) {
+  function emptyMessage(section, open, visible) {
     if (!open.length) return 'Everyone on this path is recruited. Well done!';
-    if (view === 'favorites' && !route().favorites.length) return 'No favorites yet. Tap ☆ on a card to pin someone here.';
-    if (!inView.length) return 'All your favorites are recruited.';
+    if (view === 'favorites' && !route().favorites.length) return 'No favorites right now. Tap ☆ on a card under All recruits to pin someone here.';
     if (!visible.length) return 'Nobody matches your search or Renown filter.';
     if (section === 'ready' && route().renown === null) return 'Enter your Renown above to see who meets their thresholds.';
     if (section === 'working') return 'No Support left to build in this view.';
@@ -1449,7 +1474,7 @@
       $(`${section}Count`).textContent = people.length;
       $(`${section}List`).innerHTML = people.length
         ? html`${people.map(p => card(p, section, today))}`
-        : html`<p class="empty">${emptyMessage(section, open, inView, visible)}</p>`;
+        : html`<p class="empty">${emptyMessage(section, open, visible)}</p>`;
     }
   }
 
@@ -1554,10 +1579,15 @@
   function markRecruited(name) {
     const lord = state.lord;
     if (!findPerson(name) || route().recruited.includes(name)) return;
+    // A recruited character keeps no star; it would only narrow the shopping list.
+    const wasFavorite = route().favorites.includes(name);
     route().recruited.push(name);
+    route().favorites = route().favorites.filter(n => n !== name);
     commit();
     toast(`${name} marked as recruited.`, () => {
-      state.routes[lord].recruited = state.routes[lord].recruited.filter(n => n !== name);
+      const saved = state.routes[lord];
+      saved.recruited = saved.recruited.filter(n => n !== name);
+      if (wasFavorite && !saved.favorites.includes(name)) saved.favorites.push(name);
       commit();
     });
   }
