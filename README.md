@@ -25,23 +25,23 @@ Your progress is saved in your browser on your own device. The online version an
 
 Anyone can check that this tool is genuine and does nothing behind your back:
 
-**1. Check the file's fingerprint (SHA-256 hash).** For v6.3 it must be:
+**1. Check the file's fingerprint (SHA-256 hash).** For v6.4 it must be:
 
 ```
-87A189AD31D8FF6D4F9444F00F4C5B77DD256D854639F90CFD450D04968AE602
+C79D65859CF3367917A0AE9D7DD3373C8B7D3D308712A9E4A7C6956D7C772CF5
 ```
 
 Get the hash of your downloaded copy with:
 
-- **Windows (PowerShell):** `Get-FileHash -Algorithm SHA256 fortune-weave-recruitment-planner-v6.3.html`
-- **macOS:** `shasum -a 256 fortune-weave-recruitment-planner-v6.3.html`
-- **Linux:** `sha256sum fortune-weave-recruitment-planner-v6.3.html`
+- **Windows (PowerShell):** `Get-FileHash -Algorithm SHA256 fortune-weave-recruitment-planner-v6.4.html`
+- **macOS:** `shasum -a 256 fortune-weave-recruitment-planner-v6.4.html`
+- **Linux:** `sha256sum fortune-weave-recruitment-planner-v6.4.html`
 
 If you downloaded `index.html` from the repository instead, use that name. It's the same file with the same hash.
 
 If the hash doesn't match, your file differs from the published one. Don't use it.
 
-**2. See the antivirus scan.** The [VirusTotal report for this exact file](https://www.virustotal.com/gui/file/87a189ad31d8ff6d4f9444f00f4c5b77dd256d854639f90cfd450d04968ae602) shows the results from dozens of antivirus engines. You can also upload your own copy there.
+**2. See the antivirus scan.** The [VirusTotal report for this exact file](https://www.virustotal.com/gui/file/c79d65859cf3367917a0ae9d7dd3373c8b7d3d308712a9e4a7c6956d7c772cf5) shows the results from dozens of antivirus engines. You can also upload your own copy there.
 
 **3. Watch what it loads.** Open the page, press F12, switch to the **Network** tab and reload. Only the page itself loads: no scripts, fonts, trackers or analytics from anywhere else.
 
