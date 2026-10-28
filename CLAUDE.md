@@ -27,7 +27,7 @@ Game data tables at the top of the script:
 - `ROUTE_TABLES`: per path, `Name|Support|Renown|chapter`. `3-4` means the guides disagree and the earlier chapter is used.
 - `TUTORIAL`, `AUTO_JOIN`, `ROUTE_NOTES`.
 - `REQUIREMENTS`, built with `gold()`, `item()`, `request()`, `paralogue()` and `talk()`. Values can be per-path maps resolved by `pick()`.
-- `PARALOGUES`, keyed by owner. Each entry has `where`, an optional `prerequisite` / `note`, and `routes`, which maps each path to `[accept ranges "M/D-M/D, …", clear-by date]`.
+- `PARALOGUES`, keyed by owner. Each entry has `where`, an optional `prerequisite` / `note`, and `routes`, which maps each path to `[accept ranges "M/D-M/D, …", clear-by date, chapter it opens in]`. The chapters come from RPG Site's path walkthroughs and Serenes Forest's paralogue table (checked 2026-10-28).
 - `STORY_GATES`, `CUTOFFS`, `APPEARS`, `REQUEST_HINTS`, `ITEM_HINTS`.
 
 ## Behaviour that is intended (don't "fix" it)
@@ -37,6 +37,7 @@ Game data tables at the top of the script:
   - Cut-offs, cleared paralogues and undated gates never lock.
   - A paralogue that is open, opening within 7 days or already past keeps the character in "ready", even if a later date is far away (Fabio).
   - Paralogues count from their first window. Between Talimun's two windows a card can be in "ready" while its badge counts down to the second window; a quest accepted in the first window can still be cleared.
+- **Card colours** always show the Renown needed. A red corner (`.person.late`) marks someone recruitable only later than their first chapter, because of a story gate or a paralogue (`late` in `buildRoster`). When a paralogue opens after `minChapter`, the card also says "Earliest Ch. N · paralogue" (`paralogueChapter`). The paralogue chapter is information only: it doesn't move cards between sections, because the date lock already does that when a date is entered.
 - **Favorites** only ever hold characters still to recruit. Recruiting removes the star, the toast's Undo restores it, "Put back" does not, and `sanitiseRoute` drops stars on recruited characters when loading or importing.
 
 ## Don't break saved progress
@@ -51,6 +52,7 @@ Game data tables at the top of the script:
 - Main flow: tick Support, enter Renown, the card moves sections, and the page doesn't jump.
 - **Read the text** of a card's "Requirements & hints" and the shopping-list headings. Missing spaces have slipped in before.
 - Date lock: on Dietrich's path with Renown 10 and Support ticked, Peppe waits at 9/1 ("Paralogue opens 9/17") and is in "ready" at 9/10. On Leda's path, Fabio is in "ready" during his paralogue window and waits after clearing it until 10/28.
+- Red corners: Cai 3 (Peppe, Ursula, Diego), Dietrich 7, Theodora 5, Leda 4. Ursula on Dietrich's path says "Earliest Ch. 9 · paralogue"; Gaitz and Fabio get the corner without that line, because their story gate (Ch. 12 and Ch. 11) is not earlier than their paralogue.
 - Favorites: star someone and mark them recruited. The star is gone and the shopping list widens; Undo brings the star back.
 - Check a 375 px width.
 

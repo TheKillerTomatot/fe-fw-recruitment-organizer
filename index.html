@@ -8,7 +8,8 @@
 
   Made with the help of AI assistants (ChatGPT and Claude).
   Recruitment data checked on 2026-10-26 against RPG Site, Serenes Forest and LUM
-  (links in the page footer). Please report mistakes so they can be fixed.
+  (links in the page footer); paralogue chapters on 2026-10-28 against RPG Site's
+  path walkthroughs and Serenes Forest. Please report mistakes so they can be fixed.
 
   © 2026 TheKillerTomatot.
   Licensed under Creative Commons BY-NC-SA 4.0:
@@ -53,6 +54,7 @@
       --kind-item: #6cb6ff;
       --kind-request: #f4a259;
       --kind-paralogue: #ee7fb5;
+      --late: #e5574f;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background: var(--bg);
@@ -156,6 +158,10 @@
     /* Character cards */
     .person { min-width: 0; padding: 15px; border: 1px solid #414e62; border-left: 5px solid var(--t-border); border-radius: 13px; background: linear-gradient(130deg, var(--t-bg), #1c2737 55%); }
     .person.urgent { box-shadow: inset 0 0 0 1px #d89d7180; }
+    /* Red corner: someone who shows up early but, because of a paralogue or story
+       gate, can only be recruited later than their Renown suggests. */
+    .person.late { position: relative; }
+    .person.late::after { content: ''; position: absolute; top: 0; right: 0; width: 24px; height: 24px; border-top-right-radius: 12px; background: linear-gradient(225deg, var(--late) 50%, transparent 50%); pointer-events: none; }
     .person-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .name-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .person h3 { font-size: 1.05rem; letter-spacing: -.02em; overflow-wrap: anywhere; }
@@ -167,6 +173,7 @@
     .chip input { width: 15px; height: 15px; margin: 0; accent-color: #83dabe; }
     .chip.done { color: #b7f6df; border-color: #4b9d87; background: #183e38; }
     .mini { font-size: .78rem; line-height: 1.5; color: #b7c2d6; }
+    .mini.late { color: #ffb3a7; }
     .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
     .badge { display: inline-flex; align-items: center; padding: 4px 8px; font-size: .75rem; font-weight: 700; line-height: 1.35; border: 1px solid; border-radius: 7px; }
     .badge--info { color: #c9d4e6; border-color: #4d5c74; background: #2a364a80; }
@@ -321,6 +328,7 @@
         <li>Pick the lord whose Part I path you're playing. Each path keeps its own progress.</li>
         <li>Enter your Renown. Chapter and in-game date are optional extras.</li>
         <li>Tick each Support rank as you reach it with a character. A card moves to the top section once its Support and Renown (and chapter, if you entered one) are met. With an in-game date entered, characters whose paralogue, arrival or story date is more than a week away wait in the bottom section until it draws close.</li>
+        <li>Card colours show the Renown needed, from green (low) to red (high). A red corner marks someone who shows up early but can only be recruited late, because they need a paralogue or a story gate; the card says from which chapter.</li>
         <li>Track items, requests and paralogues in <strong>Shopping list &amp; tasks</strong>. Each card's requirements show a ✓ for what's done.</li>
         <li>Star characters (☆) to focus the shopping list and the Favorites view on them. Recruiting someone removes their star.</li>
         <li>When someone joins, press <strong>Mark recruited</strong>. You can undo it straight away (which also brings back a star), or later under <strong>Recruited characters</strong>.</li>
@@ -481,6 +489,12 @@
       <a href="https://lum.gg/fire-emblem-fortunes-weave/recruitment" target="_blank" rel="noopener noreferrer">LUM</a> and
       <a href="https://www.rpgsite.net/guide/21387-fire-emblem-fortunes-weave-paralogues-how-to-access-all-paralogue-battles-where-to-find-them" target="_blank" rel="noopener noreferrer">RPG Site's paralogue guide</a>.
       Where they disagree, the character's details say so.</p>
+    <p>Paralogue chapters checked on 28 Oct 2026 against RPG Site's walkthroughs for
+      <a href="https://www.rpgsite.net/guide/21213-fire-emblem-fortunes-weave-part-i-cais-path-walkthrough" target="_blank" rel="noopener noreferrer">Cai's</a>,
+      <a href="https://www.rpgsite.net/guide/21212-fire-emblem-fortunes-weave-part-i-dietrichs-path-walkthrough" target="_blank" rel="noopener noreferrer">Dietrich's</a>,
+      <a href="https://www.rpgsite.net/guide/21211-fire-emblem-fortunes-weave-part-i-theodoras-path-walkthrough" target="_blank" rel="noopener noreferrer">Theodora's</a> and
+      <a href="https://www.rpgsite.net/guide/21210-fire-emblem-fortunes-weave-part-i-ledas-path-walkthrough" target="_blank" rel="noopener noreferrer">Leda's</a> paths and
+      <a href="https://serenesforest.net/fortunes-weave/miscellaneous/paralogues/" target="_blank" rel="noopener noreferrer">Serenes Forest's paralogue table</a>.</p>
     <p>Built with the help of AI assistants (ChatGPT and Claude). Recruitment data was checked against community guides, but it may still contain mistakes — corrections welcome.</p>
     <p>Unofficial fan-made tool. Not affiliated with or endorsed by Nintendo or the game's developers. Fire Emblem is a trademark of Nintendo. No game assets are used, and all hints are written in our own words.</p>
     <p>Privacy: your progress stays in this browser. The page sends nothing anywhere and loads nothing from the internet.</p>
@@ -726,50 +740,57 @@
     Zarcone: [gold(10, 'The fee starts high, but you can haggle it down to 10 G. How much you pay makes no difference.')],
   };
 
-  // Per path: [days the quest can be accepted, last day to clear it].
-  // Ranges are "M/D-M/D"; several ranges are separated by commas.
+  // Per path: [days the quest can be accepted, last day to clear it, chapter it opens in].
+  // Ranges are "M/D-M/D"; several ranges are separated by commas. Chapters were checked
+  // against RPG Site's walkthrough for each path and Serenes Forest's paralogue table.
   const PARALOGUES = {
     Leda: {
       where: 'Leda, at (Lower) Temple Row.',
       note: 'The battle itself happens on 9/8; accepting early just lets you skip ahead.',
-      routes: { Dietrich: ['9/2-9/8', '9/8'], Theodora: ['9/2-9/8', '9/8'] },
+      routes: { Dietrich: ['9/2-9/8', '9/8', 9], Theodora: ['9/2-9/8', '9/8', 10] },
     },
     Bertrand: {
       where: 'Gabriel, near the arena entrance.',
       prerequisite: "Visit Fezzan Gate beforehand, so the quest's Location condition is ticked.",
-      routes: { Cai: ['9/17-9/25', '9/25'], Dietrich: ['9/17', '9/17'], Theodora: ['9/17-9/25', '9/25'] },
+      routes: { Cai: ['9/17-9/25', '9/25', 10], Dietrich: ['9/17', '9/17', 9], Theodora: ['9/17-9/25', '9/25', 11] },
     },
     Talimun: {
       where: 'Talimun, near the port by Vandahl Trading Co.',
       routes: {
-        Cai: ['9/17-9/22, 10/1-10/10', '10/12'],
-        Dietrich: ['9/17-9/22, 10/1-10/10', '10/12'],
-        Theodora: ['9/17-9/22, 10/1-10/10', '10/12'],
+        Cai: ['9/17-9/22, 10/1-10/10', '10/12', 10],
+        Dietrich: ['9/17-9/22, 10/1-10/10', '10/12', 9],
+        Theodora: ['9/17-9/22, 10/1-10/10', '10/12', 11],
       },
     },
     Anatolia: {
       where: 'Anatolia, in City Streets on the east side of Dagsion.',
-      routes: { Dietrich: ['10/5-10/14', '10/17'], Leda: ['10/5-10/14', '10/17'] },
+      routes: { Dietrich: ['10/5-10/14', '10/17', 11], Leda: ['10/5-10/14', '10/17', 10] },
     },
     Cai: {
       where: 'Cai, in City Streets near the south-east exit of Dagsion.',
       note: 'The battle itself happens on 10/22.',
-      routes: { Dietrich: ['10/16-10/22', '10/22'], Theodora: ['10/16-10/22', '10/22'], Leda: ['10/16-10/22', '10/22'] },
+      routes: { Dietrich: ['10/16-10/22', '10/22', 11], Theodora: ['10/16-10/22', '10/22', 12], Leda: ['10/16-10/22', '10/22', 11] },
     },
     Dietrich: {
       where: 'Fabio, near the arena.',
-      routes: { Leda: ['10/16-10/22', '11/1'] },
+      routes: { Leda: ['10/16-10/22', '11/1', 11] },
     },
     Orchel: {
       where: 'Orchel, at Lower Temple Row.',
-      routes: { Cai: ['10/18-10/20', '10/21'], Dietrich: ['10/18-10/25', '10/27'], Theodora: ['10/18-10/24', '10/24'], Leda: ['10/18-10/25', '10/27'] },
+      routes: { Cai: ['10/18-10/20', '10/21', 11], Dietrich: ['10/18-10/25', '10/27', 11], Theodora: ['10/18-10/24', '10/24', 12], Leda: ['10/18-10/25', '10/27', 11] },
     },
   };
 
   // Story gates: recruitable only from this chapter (and in-game date, where known).
   const STORY_GATES = {
     Gaitz: { Dietrich: { chapter: 12 } },
-    Fabio: { Leda: { chapter: 12, date: '11/4' } },
+    Fabio: {
+      Leda: {
+        chapter: 11,
+        date: '11/4',
+        note: 'Guides differ on the chapter: RPG Site says around Chapter 12, but 11/4 already falls in Chapter 11 on this path. The earlier one is used.',
+      },
+    },
   };
   // Must be recruited before this date.
   const CUTOFFS = { Lilian: '10/24', Lysander: '10/24' };
@@ -862,6 +883,7 @@
           label: `${req.owner}'s Paralogue`,
           windows: parseRanges(dates[0]),
           clearBy: parseDate(dates[1]),
+          chapter: dates[2],
         };
       }
       default:
@@ -875,6 +897,9 @@
       const [chapter, laterChapter = null] = chapters.split('-').map(Number);
       const tutorial = TUTORIAL[lord] === name;
       const gate = STORY_GATES[name]?.[lord] ?? null;
+      const minChapter = Math.max(chapter, gate?.chapter ?? 0);
+      const requirements = tutorial ? [] : (REQUIREMENTS[name] ?? []).map(req => resolveRequirement(req, name, lord));
+      const paralogueChapter = Math.max(0, ...requirements.filter(req => req.type === 'paralogue').map(req => req.chapter));
       return {
         name,
         support: Number(support),
@@ -883,9 +908,13 @@
         laterChapter,
         gate,
         gateDate: gate?.date ? parseDate(gate.date) : null,
-        minChapter: Math.max(chapter, gate?.chapter ?? 0),
+        minChapter,
+        // A paralogue that opens after minChapter: they can't be recruited before it.
+        paralogueChapter: paralogueChapter > minChapter ? paralogueChapter : null,
+        // Shows up early but is recruitable only later (story gate or paralogue): the red corner.
+        late: Math.max(minChapter, paralogueChapter) > chapter,
         tutorial,
-        requirements: tutorial ? [] : (REQUIREMENTS[name] ?? []).map(req => resolveRequirement(req, name, lord)),
+        requirements,
         cutoff: CUTOFFS[name] ? parseDate(CUTOFFS[name]) : null,
         appears: APPEARS[name] ? parseRanges(APPEARS[name])[0] : null,
       };
@@ -911,6 +940,7 @@
           if (req.type === 'paralogue' && !(req.clearBy && req.windows.every(w => w.start && w.end))) {
             problems.push(`${lord}: bad dates for ${req.label}`);
           }
+          if (req.type === 'paralogue' && !Number.isInteger(req.chapter)) problems.push(`${lord}: no chapter for ${req.label}`);
         }
       }
     }
@@ -1086,6 +1116,8 @@
     return clearBy > windows.at(-1).end ? `${pickup}, clear by ${formatDate(clearBy)}` : pickup;
   }
 
+  const chapterLabel = req => `from Ch. ${req.chapter}`;
+
   const paralogueHint = req => [`Accept it from ${req.where}`, req.prerequisite, req.note].filter(Boolean).join(' ');
 
   // Paralogue windows, cutoffs, story gates and first appearances for one character.
@@ -1183,7 +1215,7 @@
       for (const fact of datedFacts(p)) {
         if (fact.date === null) continue;
         if (fact.kind === 'paralogue') {
-          add(fact.req.id, { fact, title: fact.req.label, detail: `Accept ${windowLabel(fact.req)}`, listNames: true }, p.name);
+          add(fact.req.id, { fact, title: fact.req.label, detail: `Accept ${windowLabel(fact.req)} · ${chapterLabel(fact.req)}`, listNames: true }, p.name);
         } else if (fact.kind === 'cutoff') {
           add(`cutoff:${fact.date}`, { fact, title: fact.title, detail: 'Not recruitable after this', listNames: true }, p.name);
         } else if (fact.kind === 'gate') {
@@ -1296,7 +1328,7 @@
           <button type="button" data-task="${req.id}" data-step="1" data-key="task:${req.id}:+1" aria-label="One more of ${req.label} done">+</button>
         </div>`;
     const detail = req.type === 'paralogue'
-      ? `Accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''} · for ${people.join(', ')}`
+      ? `Accept ${windowLabel(req)} · ${chapterLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''} · for ${people.join(', ')}`
       : `For ${people.join(', ')}`;
     return html`
       <div class="shopping-row kind-${req.type}">
@@ -1367,7 +1399,7 @@
       case 'request':
         return html`<li class="kind-request ${doneClass}">Complete ${req.label} <span class="progress">(${progressOf(req)}/${req.qty})</span>${spoiler(req.hint, key)}</li>`;
       case 'paralogue':
-        return html`<li class="kind-paralogue ${doneClass}">Clear ${req.label}: accept ${windowLabel(req)}${req.prerequisite ? ' · needs a location visited first' : ''}${spoiler(paralogueHint(req), key)}</li>`;
+        return html`<li class="kind-paralogue ${doneClass}">Clear ${req.label}: accept ${windowLabel(req)} (${chapterLabel(req)})${req.prerequisite ? ' · needs a location visited first' : ''}${spoiler(paralogueHint(req), key)}</li>`;
       case 'gold':
         return html`<li class="later">At recruitment: pay ${formatNumber(req.amount)} G${spoiler(req.hint, key)}</li>`;
       default:
@@ -1383,6 +1415,8 @@
     return html`
       <p>Support ${p.support} · Renown ${p.renown} · Chapter ${p.minChapter}+</p>
       ${gate ? html`<p>Story gate: recruitable from ${gate}.</p>` : ''}
+      ${p.gate?.note ? html`<p>${p.gate.note}</p>` : ''}
+      ${p.paralogueChapter ? html`<p>Recruitable from Chapter ${p.paralogueChapter} at the earliest, because the paralogue they need only opens then.</p>` : ''}
       ${p.laterChapter ? html`<p>Guides differ on the chapter: Serenes Forest lists ${p.chapter}, LUM lists ${p.laterChapter}. The earlier one is used.</p>` : ''}
       <ul class="reqs">${lines}</ul>
       ${trackedOf(p).length ? html`<p class="hint-note">Tick tasks off under “Shopping list &amp; tasks”.</p>` : ''}`;
@@ -1413,7 +1447,7 @@
     const status = statusLine(p, section);
     const detailsKey = `details:${p.name}`;
     return html`
-      <article class="person r${p.renown}${badges.some(b => b.tone === 'urgent') ? ' urgent' : ''}">
+      <article class="person r${p.renown}${p.late ? ' late' : ''}${badges.some(b => b.tone === 'urgent') ? ' urgent' : ''}">
         <div class="person-head">
           <div class="name-line">
             <button type="button" class="star" data-favorite="${p.name}" data-key="favorite:${p.name}"
@@ -1429,6 +1463,7 @@
               Support ${rank}
             </label>`)}
           <span class="mini">Ch. ${p.minChapter}+</span>
+          ${p.paralogueChapter ? html`<span class="mini late">Earliest Ch. ${p.paralogueChapter} · paralogue</span>` : ''}
           ${tracked.length ? html`<span class="mini">Tasks ${tracked.filter(isDone).length}/${tracked.length}</span>` : ''}
           ${goldNeeded ? html`<span class="mini">Costs ${formatNumber(goldNeeded)} G</span>` : ''}
         </div>

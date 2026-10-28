@@ -17,6 +17,7 @@ Your progress is saved in your browser on your own device. The online version an
 
 - Separate progress for Cai's, Dietrich's, Theodora's and Leda's paths
 - Cards sort themselves into "ready", "Support in progress" and "waiting on Renown, chapter or date"
+- A red corner on characters who show up early but can only be recruited late because of a paralogue or story gate, with the chapter it opens in
 - A shopping list for items, requests and paralogues, with progress shown on each card
 - An optional in-game date that shows which paralogue windows are open, coming up or closed, and keeps characters you can't recruit for a while yet out of the "ready" section
 - Hints and puzzle answers hidden behind spoiler tags until you tap them
@@ -49,7 +50,7 @@ If the hash doesn't match, your file differs from the published one. Don't use i
 
 ## Data sources
 
-Recruitment requirements were checked on 26 Oct 2026 against [RPG Site](https://www.rpgsite.net/guide/21391-fire-emblem-fortunes-weave-recruitment-guide-all-characters-in-game-how-to-recruit-them), [Serenes Forest](https://serenesforest.net/fortunes-weave/characters/recruitment/), [LUM](https://lum.gg/fire-emblem-fortunes-weave/recruitment) and [RPG Site's paralogue guide](https://www.rpgsite.net/guide/21387-fire-emblem-fortunes-weave-paralogues-how-to-access-all-paralogue-battles-where-to-find-them). Where the guides disagree, the planner uses the earlier chapter and says so in the character's details. Mistakes are still possible; corrections are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+Recruitment requirements were checked on 26 Oct 2026 against [RPG Site](https://www.rpgsite.net/guide/21391-fire-emblem-fortunes-weave-recruitment-guide-all-characters-in-game-how-to-recruit-them), [Serenes Forest](https://serenesforest.net/fortunes-weave/characters/recruitment/), [LUM](https://lum.gg/fire-emblem-fortunes-weave/recruitment) and [RPG Site's paralogue guide](https://www.rpgsite.net/guide/21387-fire-emblem-fortunes-weave-paralogues-how-to-access-all-paralogue-battles-where-to-find-them). Paralogue chapters were checked on 28 Oct 2026 against RPG Site's walkthroughs for [Cai's](https://www.rpgsite.net/guide/21213-fire-emblem-fortunes-weave-part-i-cais-path-walkthrough), [Dietrich's](https://www.rpgsite.net/guide/21212-fire-emblem-fortunes-weave-part-i-dietrichs-path-walkthrough), [Theodora's](https://www.rpgsite.net/guide/21211-fire-emblem-fortunes-weave-part-i-theodoras-path-walkthrough) and [Leda's](https://www.rpgsite.net/guide/21210-fire-emblem-fortunes-weave-part-i-ledas-path-walkthrough) paths and [Serenes Forest's paralogue table](https://serenesforest.net/fortunes-weave/miscellaneous/paralogues/). Where the guides disagree, the planner uses the earlier chapter and says so in the character's details. Mistakes are still possible; corrections are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Made with AI
 
